@@ -63,6 +63,15 @@ model User {
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    Server Server[]
+
+    Member Member[]
+
+    Channel Channel[]
 }
 
 model VerificationToken {
@@ -71,4 +80,56 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+
+model Server {
+    id         String    @id @default(cuid())
+    name       String
+    image      String 
+    inviteCode String
+
+    profileId String
+    user         User     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+    @@index([profileId])
+    Member Member[]
+    Channel Channel[]
+}
+
+enum MemberRole {
+    ADMIN
+    MEMBER
+}
+
+model Member {
+    id String @id @default(uuid())
+    role MemberRole @default(MEMBER)
+    profileId String
+    user  User @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+    serverId String
+    server Server @relation(fields: [serverId],references: [id],onDelete: Cascade)
+    @@index([profileId])
+}
+
+enum ChannelType {
+    TEXT
+    VOICE
+}
+
+model Channel {
+    id String @id @default(uuid())
+    name String
+    
+    type ChannelType @default(TEXT)
+
+    profileId String
+    user  User @relation(fields: [profileId], references: [id], onDelete: Cascade)
+    
+    serverId String
+    server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+    @@index([profileId])
+    @@index([serverId])
 }
