@@ -26,7 +26,10 @@ import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/trpc/react";
 
 const serverSchema = z.object({
-  name: z.string().min(1, "Server name is required").max(50, "Server name is too long"),
+  name: z
+    .string()
+    .min(1, "Server name is required")
+    .max(50, "Server name is too long"),
   description: z.string().max(200, "Description is too long").optional(),
 });
 
@@ -34,7 +37,7 @@ type ServerFormData = z.infer<typeof serverSchema>;
 
 export default function CreateServerDialog() {
   const utils = api.useUtils();
-  
+
   const form = useForm<ServerFormData>({
     resolver: zodResolver(serverSchema),
     defaultValues: {
@@ -63,9 +66,12 @@ export default function CreateServerDialog() {
     <Dialog open>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">Customize your server</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">
+            Customize your server
+          </DialogTitle>
           <DialogDescription>
-            Give your server a name and description. You can always change these later.
+            Give your server a name and description. You can always change these
+            later.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -77,16 +83,13 @@ export default function CreateServerDialog() {
                 <FormItem>
                   <FormLabel>Server name</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Enter server name"
-                      {...field}
-                    />
+                    <Input placeholder="Enter server name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="description"
@@ -108,9 +111,11 @@ export default function CreateServerDialog() {
             <Button
               type="submit"
               className="w-full"
-              disabled={createServer.status === 'pending'}
+              disabled={createServer.status === "pending"}
             >
-              {createServer.status === 'pending' ? "Creating..." : "Create Server"}
+              {createServer.status === "pending"
+                ? "Creating..."
+                : "Create Server"}
             </Button>
           </form>
         </Form>
