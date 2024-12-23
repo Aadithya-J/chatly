@@ -37,8 +37,7 @@ export const authConfig = {
     Google({
       clientId: process.env.NEXT_GOOGLE_ID,
       clientSecret: process.env.NEXT_GOOGLE_SECRET,
-      
-    })
+    }),
     /**
      * ...add more providers here.
      *
