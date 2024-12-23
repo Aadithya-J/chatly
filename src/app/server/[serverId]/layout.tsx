@@ -13,10 +13,8 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
-  SidebarRail,
 } from "~/components/ui/sidebar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
-import { ChevronsDown } from "lucide-react";
+import ServerDropdown from "~/components/server-dropdown";
 
 export default async function ServerNavigationBar({
   params,
@@ -54,32 +52,13 @@ export default async function ServerNavigationBar({
   const voiceChannels = serverData.Channel?.filter(
     channel => channel.type === ChannelType.VOICE
   );
-
   return (
     <SidebarProvider>
       <div className="flex h-screen">
         <div className="inset-y-0 left-0 w-60 hidden lg:block">
           <Sidebar>
             <SidebarHeader>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="w-full p-2 text-left hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50">
-                  <div className="flex flex-row ">
-                    {serverData.name}
-                    <ChevronsDown className="ml-auto"/>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-60">
-                  <DropdownMenuItem>
-                    <Link href={`/server/${serverId}/settings`}>Server Settings</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href={`/server/${serverId}/invite`}>Invite People</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href={`/server/${serverId}/leave`}>Leave Server</Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <ServerDropdown serverName={serverData.name} serverId={serverId} />
             </SidebarHeader>
 
             <SidebarContent>
@@ -122,7 +101,6 @@ export default async function ServerNavigationBar({
                 </SidebarGroupContent>
               </SidebarGroup>
             </SidebarContent>
-            <SidebarRail />
           </Sidebar>
         </div>
 
