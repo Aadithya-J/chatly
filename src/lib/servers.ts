@@ -1,18 +1,13 @@
 import { type Server } from "@prisma/client";
+import { redirect } from "next/navigation";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 
-export const getServers = async (): Promise<{
-  servers: Server[] | null;
-  error: string | null;
-}> => {
+export const getServers = async (): Promise<Server[] | null> => {
   try {
     const session = await auth();
     if (!session?.user) {
-      return {
-        servers: null,
-        error: "User is not logged in",
-      };
+      redirect("/login");
     }
     const servers: Server[] =
       (await db.server.findMany({
@@ -21,18 +16,12 @@ export const getServers = async (): Promise<{
         },
       })) ?? [];
 
-    return {
-      servers: servers.length > 0 ? servers : null,
-      error: null,
-    };
+    return servers.length > 0 ? servers : null;
   } catch (err) {
     const error =
       err instanceof Error ? err.message : "An unknown error occurred";
     console.error("[Server Error]:", error);
 
-    return {
-      servers: null,
-      error,
-    };
+    return null;
   }
 };
