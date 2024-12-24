@@ -14,7 +14,7 @@ export default async function Home() {
   }
 
   const serversData = await getServers();
-  const servers: Server[] = serversData?.servers ?? [];
+  const servers: Server[] = serversData ?? [];
   if (!servers) {
     redirect("/createserver");
   }
