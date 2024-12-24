@@ -25,14 +25,19 @@ const ServerDropdown: React.FC<ServerDropdownProps> = ({
   return (
     <DropdownMenu onOpenChange={setIsOpen}>
       <DropdownMenuTrigger className="w-full p-2 text-left hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50">
-        <div className="flex flex-row">
-          {serverName}
-          {isOpen ? (
-            <XIcon className="ml-auto" />
-          ) : (
-            <ChevronRight className="ml-auto" />
-          )}
-        </div>
+          <div className="border-b border-[#2c2e32]">
+            <div className="flex flex-row">
+              <h2 className="text-base p-2 font-semibold text-slate-600 truncate">{serverName}</h2>
+              <div className="ml-auto p-2">
+                {isOpen ? (
+                  <XIcon className="ml-auto" />
+                ) : (
+                  <ChevronRight className="ml-auto" />
+                )}
+              </div>
+
+            </div>
+          </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-60">
         <DropdownMenuItem>
