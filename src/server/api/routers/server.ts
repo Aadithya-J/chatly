@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import type { PrismaClient } from "@prisma/client";
 import { auth } from "~/server/auth";
-import { MemberRole } from "@prisma/client";
+import { ChannelType, MemberRole } from "@prisma/client";
 export const serverRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
@@ -56,5 +56,54 @@ export const serverRouter = createTRPCRouter({
       });
 
       return server;
+    }),
+
+  getServers: protectedProcedure.query(async ({ ctx }) => {
+    const session = await auth();
+    if (!session?.user) {
+      throw new Error("Unauthorized");
+    }
+    
+    return ctx.db.server.findMany({
+      where: {
+        profileId: session.user.id,
+      },
+    });
+  }),
+
+  getChannels: protectedProcedure
+    .input(z.object({ serverId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const serverData = await ctx.db.server.findUnique({
+        where: { id: input.serverId },
+        include: {
+          Channel: {
+            orderBy: {
+              name: "asc",
+            },
+            select: {
+              id: true,
+              name: true,
+              type: true,
+              profileId: true,
+              serverId: true,
+            },
+          },
+        },
+      });
+
+      if (!serverData) {
+        console.log("server not found");
+        return null;
+      }
+
+      return {
+        text: serverData.Channel?.filter(
+          (channel) => channel.type === ChannelType.TEXT
+        ),
+        voice: serverData.Channel?.filter(
+          (channel) => channel.type === ChannelType.VOICE
+        ),
+      };
     }),
 });
