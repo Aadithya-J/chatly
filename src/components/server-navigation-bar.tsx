@@ -16,7 +16,12 @@ import {
   SidebarTrigger,
   SidebarRail,
 } from "~/components/ui/sidebar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 import { SearchForm } from "~/components/search-form";
 import { VersionSwitcher } from "~/components/version-switcher";
 
@@ -28,7 +33,11 @@ export default async function ServerNavigationBar({
 }: {
   params: Promise<{ serverId: string }>;
   versions?: string[];
-  navMain?: Array<{ title: string; url: string; items: Array<{ title: string; url: string; isActive?: boolean }> }>;
+  navMain?: Array<{
+    title: string;
+    url: string;
+    items: Array<{ title: string; url: string; isActive?: boolean }>;
+  }>;
   children: React.ReactNode;
 }) {
   const serverId = (await params).serverId;
@@ -53,16 +62,16 @@ export default async function ServerNavigationBar({
   }
 
   const textChannels = serverData.Channel?.filter(
-    channel => channel.type === ChannelType.TEXT
+    (channel) => channel.type === ChannelType.TEXT,
   );
   const voiceChannels = serverData.Channel?.filter(
-    channel => channel.type === ChannelType.VOICE
+    (channel) => channel.type === ChannelType.VOICE,
   );
 
   return (
     <SidebarProvider>
       <div className="flex h-screen">
-        <div className="inset-y-0 left-0 w-60 hidden lg:block">
+        <div className="inset-y-0 left-0 hidden w-60 lg:block">
           <Sidebar>
             <SidebarHeader>
               {versions && (
@@ -78,10 +87,14 @@ export default async function ServerNavigationBar({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-60">
                   <DropdownMenuItem>
-                    <Link href={`/server/${serverId}/settings`}>Server Settings</Link>
+                    <Link href={`/server/${serverId}/settings`}>
+                      Server Settings
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Link href={`/server/${serverId}/invite`}>Invite People</Link>
+                    <Link href={`/server/${serverId}/invite`}>
+                      Invite People
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Link href={`/server/${serverId}/leave`}>Leave Server</Link>
@@ -98,7 +111,7 @@ export default async function ServerNavigationBar({
                     {textChannels?.length > 0 && (
                       <>
                         <SidebarMenuButton>Text Channels</SidebarMenuButton>
-                        {textChannels.map(channel => (
+                        {textChannels.map((channel) => (
                           <Link
                             key={channel.id}
                             href={`/server/${serverId}/channel/${channel.id}`}
@@ -114,7 +127,7 @@ export default async function ServerNavigationBar({
                     {voiceChannels?.length > 0 && (
                       <>
                         <SidebarMenuButton>Voice Channels</SidebarMenuButton>
-                        {voiceChannels.map(channel => (
+                        {voiceChannels.map((channel) => (
                           <Link
                             key={channel.id}
                             href={`/server/${serverId}/channel/${channel.id}`}
@@ -131,14 +144,17 @@ export default async function ServerNavigationBar({
               </SidebarGroup>
 
               {/* Navigation Items */}
-              {navMain?.map(item => (
+              {navMain?.map((item) => (
                 <SidebarGroup key={item.title}>
                   <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
                   <SidebarGroupContent>
                     <SidebarMenu>
-                      {item.items.map(subItem => (
+                      {item.items.map((subItem) => (
                         <SidebarMenuItem key={subItem.title}>
-                          <SidebarMenuButton asChild isActive={subItem.isActive}>
+                          <SidebarMenuButton
+                            asChild
+                            isActive={subItem.isActive}
+                          >
                             <a href={subItem.url}>{subItem.title}</a>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -156,9 +172,7 @@ export default async function ServerNavigationBar({
           <SidebarTrigger />
         </div>
 
-        <main className="flex-1 h-screen bg-white p-6">
-          {children}
-        </main>
+        <main className="h-screen flex-1 bg-white p-6">{children}</main>
       </div>
     </SidebarProvider>
   );

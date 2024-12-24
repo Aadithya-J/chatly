@@ -22,7 +22,11 @@ export default async function ServerNavigationBar({
 }: {
   params: Promise<{ serverId: string }>;
   versions?: string[];
-  navMain?: Array<{ title: string; url: string; items: Array<{ title: string; url: string; isActive?: boolean }> }>;
+  navMain?: Array<{
+    title: string;
+    url: string;
+    items: Array<{ title: string; url: string; isActive?: boolean }>;
+  }>;
   children: React.ReactNode;
 }) {
   const serverId = (await params).serverId;
@@ -47,18 +51,21 @@ export default async function ServerNavigationBar({
   }
 
   const textChannels = serverData.Channel?.filter(
-    channel => channel.type === ChannelType.TEXT
+    (channel) => channel.type === ChannelType.TEXT,
   );
   const voiceChannels = serverData.Channel?.filter(
-    channel => channel.type === ChannelType.VOICE
+    (channel) => channel.type === ChannelType.VOICE,
   );
   return (
     <SidebarProvider>
       <div className="flex h-screen">
-        <div className="inset-y-0 left-0 w-60 hidden lg:block">
+        <div className="inset-y-0 left-0 hidden w-60 lg:block">
           <Sidebar>
             <SidebarHeader>
-              <ServerDropdown serverName={serverData.name} serverId={serverId} />
+              <ServerDropdown
+                serverName={serverData.name}
+                serverId={serverId}
+              />
             </SidebarHeader>
 
             <SidebarContent>
@@ -69,7 +76,7 @@ export default async function ServerNavigationBar({
                     {textChannels?.length > 0 && (
                       <>
                         <SidebarMenuButton>Text Channels</SidebarMenuButton>
-                        {textChannels.map(channel => (
+                        {textChannels.map((channel) => (
                           <Link
                             key={channel.id}
                             href={`/server/${serverId}/channel/${channel.id}`}
@@ -85,7 +92,7 @@ export default async function ServerNavigationBar({
                     {voiceChannels?.length > 0 && (
                       <>
                         <SidebarMenuButton>Voice Channels</SidebarMenuButton>
-                        {voiceChannels.map(channel => (
+                        {voiceChannels.map((channel) => (
                           <Link
                             key={channel.id}
                             href={`/server/${serverId}/channel/${channel.id}`}
@@ -108,9 +115,7 @@ export default async function ServerNavigationBar({
           <SidebarTrigger />
         </div>
 
-        <main className="flex-1 h-screen bg-white p-6">
-          {children}
-        </main>
+        <main className="h-screen flex-1 bg-white p-6">{children}</main>
       </div>
     </SidebarProvider>
   );

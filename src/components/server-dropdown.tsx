@@ -1,17 +1,25 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import Link from "next/link";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { XIcon } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
+import { ChevronRight } from "lucide-react";
+import { XIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 
 interface ServerDropdownProps {
   serverName: string;
   serverId: string;
 }
 
-const ServerDropdown: React.FC<ServerDropdownProps> = ({ serverName, serverId }) => {
+const ServerDropdown: React.FC<ServerDropdownProps> = ({
+  serverName,
+  serverId,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
