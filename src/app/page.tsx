@@ -1,24 +1,8 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { LatestPost } from "~/app/_components/post";
-import { getServers } from "~/lib/servers";
 import { auth } from "~/server/auth";
-import { api, HydrateClient } from "~/trpc/server";
-import type { Server } from "@prisma/client";
+import { HydrateClient } from "~/trpc/server";
 export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
   const session = await auth();
-  console.log(session);
-  if (session?.user) {
-    void api.post.getLatest.prefetch();
-  }
-
-  const serversData = await getServers();
-  const servers: Server[] = serversData ?? [];
-  if (!servers) {
-    redirect("/createserver");
-  }
-
   return (
     <HydrateClient>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
@@ -52,7 +36,7 @@ export default async function Home() {
           </div>
           <div className="flex flex-col items-center gap-2">
             <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
+              {"Loading tRPC query..."}
             </p>
 
             <div className="flex flex-col items-center justify-center gap-4">
@@ -67,8 +51,6 @@ export default async function Home() {
               </Link>
             </div>
           </div>
-
-          {session?.user && <LatestPost />}
         </div>
       </main>
     </HydrateClient>
