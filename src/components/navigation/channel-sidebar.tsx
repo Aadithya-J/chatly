@@ -12,14 +12,12 @@ interface ChannelSidebarProps {
   }
   selectedChannelId: string;
   serverId: string;
-  onChannelSelect: (channelId: string) => void;
   serverName: string;
 }
 
 export function ChannelSidebar({
   channels,
   selectedChannelId,
-  onChannelSelect,
   serverName,
   serverId
 }: ChannelSidebarProps) {
@@ -43,8 +41,8 @@ export function ChannelSidebar({
                 <ChannelButton
                   key={channel.id}
                   channel={channel}
+                  serverId={serverId}
                   isSelected={selectedChannelId === channel.id}
-                  onClick={() => onChannelSelect(channel.id)}
                 />
               ))}
             </div>
@@ -57,9 +55,9 @@ export function ChannelSidebar({
               {voiceChannels.map((channel) => (
                 <ChannelButton
                   key={channel.id}
+                  serverId={serverId}
                   channel={channel}
                   isSelected={selectedChannelId === channel.id}
-                  onClick={() => onChannelSelect(channel.id)}
                 />
               ))}
             </div>

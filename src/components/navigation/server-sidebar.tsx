@@ -8,15 +8,16 @@ import Link from 'next/link';
 import { Button } from '~/components/ui/button';
 
 interface ServerSidebarProps {
-  servers: Server[];
+  servers: {
+    server: Server;
+    firstTextChannelId: string;
+  }[],
   selectedServerId: string;
-  onServerSelect: (serverId: string) => void;
 }
 
 export function ServerSidebar({
   servers,
   selectedServerId,
-  onServerSelect,
 }: ServerSidebarProps) {
   return (
     <div className="h-full w-[72px] flex flex-col items-center bg-[#e6e6e6] py-3">
@@ -28,12 +29,12 @@ export function ServerSidebar({
       <Separator className="my-2 w-12 h-[2px] bg-[#313338] rounded-lg" />
       <ScrollArea className="flex-1 w-full">
         <div className="flex flex-col items-center space-y-2">
-          {servers.map((server) => (
+          {servers.map((serverData : {server : Server,firstTextChannelId: string}) => (
             <ServerButton
-              key={server.id}
-              {...server}
-              isSelected={selectedServerId === server.id}
-              onClick={() => onServerSelect(server.id)}
+              key={serverData.server.id}
+              {...serverData.server}
+              firstTextChannelId={serverData.firstTextChannelId}
+              isSelected={selectedServerId === serverData.server.id}
             />
           ))}
         </div>

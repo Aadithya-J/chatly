@@ -58,18 +58,33 @@ export const serverRouter = createTRPCRouter({
       return server;
     }),
 
-  getServers: protectedProcedure.query(async ({ ctx }) => {
-    const session = await auth();
-    if (!session?.user) {
-      throw new Error("Unauthorized");
-    }
+    getServers: protectedProcedure.query(async ({ ctx }) => {
+      const session = await auth();
+      if (!session?.user) {
+        throw new Error("Unauthorized");
+      }
     
-    return ctx.db.server.findMany({
-      where: {
-        profileId: session.user.id,
-      },
-    });
-  }),
+      const servers = await ctx.db.server.findMany({
+        where: {
+          profileId: session.user.id,
+        },
+        include: {
+          Channel: {
+            where: {
+              type: 'TEXT', // Ensure only text channels are fetched
+            },
+            take: 1, // Fetch only the first channel
+            orderBy: { name: "asc" },
+          },
+        },
+      });
+    
+      return servers.map(server => ({
+        ...server,
+        firstTextChannel: server.Channel?.[0] ?? null, 
+      }));
+    }),
+    
 
   getChannels: protectedProcedure
     .input(z.object({ serverId: z.string() }))

@@ -4,20 +4,21 @@ import { ChannelType, type Channel } from '@prisma/client';
 import { cn } from '~/lib/utils';
 import { Hash, Volume2 } from 'lucide-react';
 import { Button } from '~/components/ui/button';
+import Link from 'next/link';
 
 interface ChannelButtonProps {
   channel: Channel;
   isSelected: boolean;
-  onClick: () => void;
+  serverId: string;
 }
 
-export function ChannelButton({ channel, isSelected, onClick }: ChannelButtonProps) {
+export function ChannelButton({ channel, serverId ,isSelected }: ChannelButtonProps) {
   const Icon = channel.type === ChannelType.TEXT ? Hash : Volume2;
   
   return (
-    <Button
+    <Link href={`/${serverId}/${channel.id}`}>
+      <Button
       variant="ghost"
-      onClick={onClick}
       className={cn(
         'w-full px-2 py-1 h-auto flex items-center justify-start space-x-2 hover:bg-[#bebebe] rounded-sm',
         isSelected && 'bg-[#ffffff]'
@@ -28,5 +29,6 @@ export function ChannelButton({ channel, isSelected, onClick }: ChannelButtonPro
         {channel.name}
       </span>
     </Button>
+    </Link>
   );
 }

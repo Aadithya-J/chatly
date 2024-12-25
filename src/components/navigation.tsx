@@ -1,35 +1,33 @@
 'use client';
 
-import { useState } from 'react';
 import { ServerSidebar } from '~/components/navigation/server-sidebar';
 import { ChannelSidebar } from '~/components/navigation/channel-sidebar';
 import type { Channel } from '@prisma/client';
 import { useServers, useChannels } from "~/hooks/api-utils";
+import { usePathname } from 'next/navigation'
 
 export function Navigation() {
-  const [selectedServerId, setSelectedServerId] = useState('home');
-  const [selectedChannelId, setSelectedChannelId] = useState('');
+  const pathname = usePathname();
 
-  const { servers = [] } = useServers();
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const selectedServerId = pathSegments[0] ?? '';
+  const selectedChannelId = pathSegments[1] ?? '';
+  const { serversData } = useServers();
   const { channels: channelData } = useChannels(selectedServerId) ?? {};
-
+  const servers = serversData.map(({ server }) => server);
   const channels: {text: Channel[] | null ,voice: Channel[]| null} = channelData ?? {text: [], voice: []};
-
   const selectedServer = servers.find(s => s.id === selectedServerId);
-
-  return (
+  return (  
     <div className='flex h-128'>
       <ServerSidebar
-        servers={servers}
+        servers={serversData}
         selectedServerId={selectedServerId}
-        onServerSelect={setSelectedServerId}
       />
-      {selectedServerId !== 'home' && (
+      {selectedServerId !== '' && (
         <ChannelSidebar
           channels={channels}
           selectedChannelId={selectedChannelId}
           serverId={selectedServerId}
-          onChannelSelect={setSelectedChannelId}
           serverName={selectedServer?.name ?? ''}
         />
       )}

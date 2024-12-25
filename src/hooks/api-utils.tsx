@@ -1,11 +1,25 @@
 import { api } from "~/trpc/react";
 import { type Server,type Channel } from "@prisma/client";
 export const useServers = (): {
-  servers: Server[],
+  serversData: {
+    server: Server,
+    firstTextChannelId: string
+  }[],
   isLoading: boolean
 } => {
+  console.log("useServers")
+  console.log(api.server.getServers.useQuery())
   const { data: servers, isLoading } = api.server.getServers.useQuery();
-  return { servers: servers ?? [], isLoading };
+  if(servers === undefined || servers === null){
+    return { serversData: [], isLoading: true };
+  }
+  return { 
+    serversData: servers?.map(server => ({
+      server,
+      firstTextChannelId: server.Channel?.[0]?.id ?? '' 
+    })) ?? [],
+    isLoading 
+  };
 };
 
 export const useChannels = (serverId: string):{
