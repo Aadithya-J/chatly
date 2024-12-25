@@ -4,30 +4,43 @@ import { type Server } from '@prisma/client';
 import { ScrollArea } from '~/components/ui/scroll-area';
 import { Separator } from '~/components/ui/separator';
 import { ServerButton } from '~/components/navigation/server-button'
-import Link from 'next/link';
 import { Button } from '~/components/ui/button';
-import { Plus, PlusIcon } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import CreateServerDialog from '~/components/create-server-dialog';
+import { useState } from 'react';
+import { type api } from '~/trpc/react';
 
 interface ServerSidebarProps {
   servers: {
     server: Server;
     firstTextChannelId: string;
   }[],
-  selectedServerId: string;
+  selectedServerId: string
+  refetch: ReturnType<typeof api.server.getServers.useQuery>['refetch'];
 }
 
 export function ServerSidebar({
   servers,
   selectedServerId,
+  refetch
 }: ServerSidebarProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+  };
+
+  const handleDialogOpen = () => {
+    setIsDialogOpen(true);
+  };
+
   return (
     <div className="h-full w-[72px] flex flex-col items-center bg-[#e6e6e6] py-3">
       <div className='group'>
-          <Link href='/createserver'>
-              <Button size={'icon'} className='w-12 h-12 rounded-[24px] bg-neutral-700 group-hover:bg-emerald-500 hover:rounded-[16px] transition-all duration-200 group relative p-0 text-emerald-300 hover:text-slate-800'>
-                  <Plus strokeWidth={2.2} className='h-full w-full'/>
-              </Button>
-          </Link>
+        <Button onClick={handleDialogOpen} size={'icon'} className='w-12 h-12 rounded-[24px] bg-neutral-700 hover:bg-emerald-500 hover:rounded-[16px] transition-all duration-200 group relative p-0 text-emerald-300 hover:text-slate-800'>
+          <Plus strokeWidth={2.2} className='h-full w-full'/>
+        </Button>
+        <CreateServerDialog isOpen={isDialogOpen} onClose={handleDialogClose} refetch={refetch}/>
       </div>
       <Separator className="my-2 w-12 h-[2px] bg-[#313338] rounded-lg" />
       <ScrollArea className="flex-1 w-full">

@@ -12,7 +12,7 @@ export function Navigation() {
   const pathSegments = pathname.split('/').filter(Boolean);
   const selectedServerId = pathSegments[0] ?? '';
   const selectedChannelId = pathSegments[1] ?? '';
-  const { serversData } = useServers();
+  const { serversData,refetch } = useServers();
   const { channels: channelData } = useChannels(selectedServerId) ?? {};
   const servers = serversData.map(({ server }) => server);
   const channels: {text: Channel[] | null ,voice: Channel[]| null} = channelData ?? {text: [], voice: []};
@@ -22,6 +22,7 @@ export function Navigation() {
       <ServerSidebar
         servers={serversData}
         selectedServerId={selectedServerId}
+        refetch={refetch}
       />
       {selectedServerId !== '' && (
         <ChannelSidebar

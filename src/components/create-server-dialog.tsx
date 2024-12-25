@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
-import {
+import {    
   Dialog,
   DialogContent,
   DialogDescription,
@@ -35,7 +35,17 @@ const serverSchema = z.object({
 
 type ServerFormData = z.infer<typeof serverSchema>;
 
-export default function CreateServerDialog() {
+interface CreateServerDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  refetch: ReturnType<typeof api.server.getServers.useQuery>['refetch'];
+}
+
+export default function CreateServerDialog({
+  isOpen,
+  onClose,
+  refetch
+}: CreateServerDialogProps) {
   const utils = api.useUtils();
 
   const form = useForm<ServerFormData>({
@@ -48,8 +58,10 @@ export default function CreateServerDialog() {
 
   const createServer = api.server.create.useMutation({
     onSuccess: async () => {
+      await refetch();
       await utils.post.invalidate();
       form.reset();
+      onClose(); // Close the dialog after success
     },
   });
 
@@ -63,7 +75,7 @@ export default function CreateServerDialog() {
   };
 
   return (
-    <Dialog open>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">

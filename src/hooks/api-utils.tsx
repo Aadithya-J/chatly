@@ -5,20 +5,22 @@ export const useServers = (): {
     server: Server,
     firstTextChannelId: string
   }[],
-  isLoading: boolean
+  isLoading: boolean,
+  refetch: ReturnType<typeof api.server.getServers.useQuery>['refetch'];
 } => {
   console.log("useServers")
   console.log(api.server.getServers.useQuery())
-  const { data: servers, isLoading } = api.server.getServers.useQuery();
+  const { data: servers, isLoading, refetch } = api.server.getServers.useQuery();
   if(servers === undefined || servers === null){
-    return { serversData: [], isLoading: true };
+    return { serversData: [], isLoading , refetch};
   }
   return { 
     serversData: servers?.map(server => ({
       server,
       firstTextChannelId: server.Channel?.[0]?.id ?? '' 
     })) ?? [],
-    isLoading 
+    isLoading,
+    refetch
   };
 };
 
