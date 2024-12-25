@@ -9,6 +9,8 @@ import { Plus } from 'lucide-react';
 import CreateServerDialog from '~/components/create-server-dialog';
 import { useState } from 'react';
 import { type api } from '~/trpc/react';
+import { LoadingScreen } from '../loading-screen';
+import { ModeToggle } from '../mode-toggle';
 
 interface ServerSidebarProps {
   servers: {
@@ -36,10 +38,10 @@ export function ServerSidebar({
     setIsDialogOpen(true);
   };
   if(isLoading){
-    return <div>Loading...</div>;
+    return <LoadingScreen />;
   }
   return (
-    <div className="h-full w-[72px] flex flex-col items-center bg-[#e6e6e6] py-3">
+    <div className="h-full w-[72px] flex flex-col items-center bg-zinc-400 dark:bg-zinc-900 py-3">
       <div className='group'>
         <Button onClick={handleDialogOpen} size={'icon'} className='w-12 h-12 rounded-[24px] bg-neutral-700 hover:bg-emerald-500 hover:rounded-[16px] transition-all duration-200 group relative p-0 text-emerald-300 hover:text-slate-800'>
           <Plus strokeWidth={2.2} className='h-full w-full'/>
@@ -59,6 +61,7 @@ export function ServerSidebar({
           ))}
         </div>
       </ScrollArea>
+      <ModeToggle />
     </div>
   );
 }

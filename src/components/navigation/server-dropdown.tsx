@@ -16,7 +16,7 @@ interface ServerDropdownProps {
   serverId: string;
 }
 
-const ServerDropdown: React.FC<ServerDropdownProps> = ({
+export const ServerDropdown: React.FC<ServerDropdownProps> = ({
   serverName,
   serverId,
 }) => {
@@ -54,4 +54,3 @@ const ServerDropdown: React.FC<ServerDropdownProps> = ({
   );
 };
 
-export default ServerDropdown;

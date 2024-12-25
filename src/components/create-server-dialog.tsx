@@ -76,7 +76,7 @@ export default function CreateServerDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-zinc-300 dark:bg-zinc-800">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
             Customize your server

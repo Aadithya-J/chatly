@@ -23,7 +23,7 @@ export function ServerButton({name, imageUrl, id, isSelected, firstTextChannelId
             <button
               className={cn(
                 'w-12 h-12 rounded-[24px] flex items-center justify-center bg-[#313338] hover:rounded-[16px] transition-all duration-200 group relative',
-                isSelected && 'bg-primary rounded-[16px]'
+                isSelected && 'bg-slate-400 dark:bg-slate-600 rounded-[16px]'
               )}
             >
               {imageUrl ? (

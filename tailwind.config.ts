@@ -1,11 +1,27 @@
 import { type Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
+import tailwindAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
   content: ["./src/**/*.tsx"],
   theme: {
     extend: {
+      animation: {
+        spin: 'spin 1.5s linear infinite',
+        'fade-in': 'fade-in 1s ease-out',
+        dash: 'dash 1.5s ease-out infinite',
+      },
+      keyframes: {
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        dash: {
+          '0%': { strokeDashoffset: '283' },
+          '100%': { strokeDashoffset: '0' },
+        },
+      },
       fontFamily: {
         sans: ["var(--font-geist-sans)", ...fontFamily.sans],
       },
@@ -64,11 +80,10 @@ export default {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
         },
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindAnimate],
 } satisfies Config;
+

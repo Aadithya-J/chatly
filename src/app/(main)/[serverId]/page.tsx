@@ -3,6 +3,7 @@
 import { useFirstChannelId } from "~/hooks/api-utils"
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect } from "react";
+import RotatingLoader from "~/components/loader";
 export default function Page() {
   console.log("Page")
   const params = useParams()
@@ -16,8 +17,8 @@ export default function Page() {
     }
   }, [firstChannelId, serverId, isLoading, isError, router])
 
-  if (isLoading) {
-    return <h2>Loading...</h2>;
+  if(isLoading){
+    return <RotatingLoader />
   }
 
   if (isError) {
