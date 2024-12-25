@@ -150,4 +150,23 @@ export const serverRouter = createTRPCRouter({
   
       return serverData.Channel?.[0]?.id ?? null;
     }),
+    createNewChannel: protectedProcedure
+    .input(
+      z.object({
+        serverId: z.string(),
+        name: z.string().min(1, "Name is required"),
+        type: z.enum(['TEXT', 'VOICE']),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const channel = await ctx.db.channel.create({
+        data: {
+          name: input.name,
+          serverId: input.serverId,
+          profileId: ctx.session?.user?.id,
+          type: (input.type === 'TEXT' ? ChannelType.TEXT : ChannelType.VOICE),
+        },
+      });
+      return channel;
+    })
 });
