@@ -1,5 +1,4 @@
 import { type Server } from "@prisma/client";
-import { redirect } from "next/navigation";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 
@@ -7,7 +6,7 @@ export const getServers = async (): Promise<Server[] | null> => {
   try {
     const session = await auth();
     if (!session?.user) {
-      redirect("/login");
+      return null;
     }
     const servers: Server[] =
       (await db.server.findMany({

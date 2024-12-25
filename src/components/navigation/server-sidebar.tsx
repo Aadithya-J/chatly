@@ -8,7 +8,6 @@ import { Button } from '~/components/ui/button';
 import { Plus } from 'lucide-react';
 import CreateServerDialog from '~/components/create-server-dialog';
 import { useState } from 'react';
-import { type api } from '~/trpc/react';
 import { LoadingScreen } from '../loading-screen';
 import { ModeToggle } from '../mode-toggle';
 
@@ -18,14 +17,12 @@ interface ServerSidebarProps {
     firstTextChannelId: string;
   }[],
   selectedServerId: string
-  refetch: ReturnType<typeof api.server.getServers.useQuery>['refetch']
   isLoading: boolean;
 }
 
 export function ServerSidebar({
   servers,
   selectedServerId,
-  refetch,
   isLoading
 }: ServerSidebarProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -46,7 +43,7 @@ export function ServerSidebar({
         <Button onClick={handleDialogOpen} size={'icon'} className='w-12 h-12 rounded-[24px] bg-neutral-700 hover:bg-emerald-500 hover:rounded-[16px] transition-all duration-200 group relative p-0 text-emerald-300 hover:text-slate-800'>
           <Plus strokeWidth={2.2} className='h-full w-full'/>
         </Button>
-        <CreateServerDialog isOpen={isDialogOpen} onClose={handleDialogClose} refetch={refetch}/>
+        <CreateServerDialog isOpen={isDialogOpen} onClose={handleDialogClose}/>
       </div>
       <Separator className="my-2 w-12 h-[2px] bg-[#313338] rounded-lg" />
       <ScrollArea className="flex-1 w-full">

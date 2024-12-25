@@ -11,7 +11,7 @@ export function Navigation() {
   const selectedServerId = Array.isArray(params.serverId) ? params.serverId[0] ?? '' : params.serverId ?? '';
   const selectedChannelId = Array.isArray(params.channelId) ? params.channelId[0] ?? '' : params.channelId ?? '';
   
-  const { serversData, isLoading: isLoadingServers, refetch } = useServers();
+  const { serversData, isLoading: isLoadingServers } = useServers();
   const { channels: channelData, isLoading: isLoadingChannels } = useChannels(selectedServerId) ?? {};
   
   const servers = serversData.map(({ server }) => server);
@@ -23,7 +23,6 @@ export function Navigation() {
       <ServerSidebar
         servers={serversData}
         selectedServerId={selectedServerId}
-        refetch={refetch}
         isLoading={isLoadingServers}  // Passing the loading state to ServerSidebar
       />
       {selectedServerId !== '' && (

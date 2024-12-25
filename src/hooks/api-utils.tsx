@@ -6,11 +6,10 @@ export const useServers = (): {
     firstTextChannelId: string
   }[],
   isLoading: boolean,
-  refetch: ReturnType<typeof api.server.getServers.useQuery>['refetch'];
 } => {
-  const { data: servers, isLoading, refetch } = api.server.getServers.useQuery();
+  const { data: servers, isLoading } = api.server.getServers.useQuery();
   if(servers === undefined || servers === null){
-    return { serversData: [], isLoading , refetch};
+    return { serversData: [], isLoading };
   }
   return { 
     serversData: servers?.map(server => ({
@@ -18,7 +17,6 @@ export const useServers = (): {
       firstTextChannelId: server.Channel?.[0]?.id ?? '' 
     })) ?? [],
     isLoading,
-    refetch
   };
 };
 

@@ -38,13 +38,11 @@ type ServerFormData = z.infer<typeof serverSchema>;
 interface CreateServerDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  refetch: ReturnType<typeof api.server.getServers.useQuery>['refetch'];
 }
 
 export default function CreateServerDialog({
   isOpen,
   onClose,
-  refetch
 }: CreateServerDialogProps) {
   const utils = api.useUtils();
 
@@ -58,13 +56,11 @@ export default function CreateServerDialog({
 
   const createServer = api.server.create.useMutation({
     onSuccess: async () => {
-      await refetch();
-      await utils.post.invalidate();
+      await utils.server.invalidate();
       form.reset();
       onClose(); // Close the dialog after success
     },
   });
-
   const onSubmit = async (data: ServerFormData) => {
     createServer.mutate({
       name: data.name,
