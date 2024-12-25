@@ -10,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Separator } from "../ui/separator";
 
 interface ServerDropdownProps {
   serverName: string;
@@ -36,10 +35,8 @@ export const ServerDropdown: React.FC<ServerDropdownProps> = ({
                   <ChevronRight className="ml-auto" />
                 )}
               </div>
-
             </div>
           </div>
-          <Separator className="w-full h-[2px] bg-zinc-400 dark:bg-[#252525] rounded-lg" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-60">
         <DropdownMenuItem>
