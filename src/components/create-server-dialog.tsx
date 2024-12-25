@@ -56,7 +56,7 @@ export default function CreateServerDialog({
 
   const createServer = api.server.create.useMutation({
     onSuccess: async () => {
-      await utils.server.invalidate();
+      await utils.server.getServers.invalidate();
       form.reset();
       onClose(); // Close the dialog after success
     },
