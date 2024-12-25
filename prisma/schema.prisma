@@ -1,153 +1,132 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
 
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
+  @@index([name])
 }
 
-// Necessary for Next auth
 model Account {
-    id                       String  @id @default(cuid())
-    userId                   String
-    type                     String
-    provider                 String
-    providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
-    expires_at               Int?
-    token_type               String?
-    scope                    String?
-    id_token                 String? // @db.Text
-    session_state            String?
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    refresh_token_expires_in Int?
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?
+  access_token             String?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
+  refresh_token_expires_in Int?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    Server Server[]
-
-    Member Member[]
-
-    Channel Channel[]
-
-    Message Message[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  Channel       Channel[]
+  Member        Member[]
+  Message       Message[]
+  posts         Post[]
+  Server        Server[]
+  sessions      Session[]
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }
-
 
 model Server {
-    id         String    @id @default(cuid())
-    name       String
-    image      String 
-    inviteCode String
+  id         String    @id @default(uuid())
+  name       String
+  image      String
+  inviteCode String
+  profileId  String
+  Channel    Channel[]
+  Member     Member[]
+  user       User      @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-    profileId String
-    user         User     @relation(fields: [profileId], references: [id], onDelete: Cascade)
-
-    @@index([profileId])
-    Member Member[]
-    Channel Channel[]
-}
-
-enum MemberRole {
-    ADMIN
-    MEMBER
+  @@index([profileId])
 }
 
 model Member {
-    id String @id @default(uuid())
-    role MemberRole @default(MEMBER)
-    profileId String
-    user  User @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String     @id @default(uuid())
+  role      MemberRole @default(MEMBER)
+  profileId String
+  serverId  String
+  user      User       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  server    Server     @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
-    serverId String
-    server Server @relation(fields: [serverId],references: [id],onDelete: Cascade)
-    @@index([profileId])
-}
-
-enum ChannelType {
-    TEXT
-    VOICE
+  @@index([profileId])
 }
 
 model Channel {
-    id String @id @default(uuid())
-    name String
-    
-    type ChannelType @default(TEXT)
+  id        String      @id @default(uuid())
+  name      String
+  type      ChannelType @default(TEXT)
+  profileId String
+  serverId  String
+  user      User        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  server    Server      @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  Message   Message[]
 
-    profileId String
-    user  User @relation(fields: [profileId], references: [id], onDelete: Cascade)
-    
-    serverId String
-    server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
-
-    @@index([profileId])
-    @@index([serverId])
-    Message Message[]
+  @@index([profileId])
+  @@index([serverId])
 }
 
 model Message {
-    id        String   @id @default(cuid())
-    content   String
-    createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  channelId String
+  profileId String
+  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-    channelId String    
-    channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  @@index([channelId])
+  @@index([profileId])
+}
 
-    profileId String
-    user      User     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+enum MemberRole {
+  ADMIN
+  MEMBER
+}
 
-    @@index([channelId])
-    @@index([profileId])
+enum ChannelType {
+  TEXT
+  VOICE
 }
