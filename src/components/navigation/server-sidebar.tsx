@@ -6,6 +6,7 @@ import { Separator } from '~/components/ui/separator';
 import { ServerButton } from '~/components/navigation/server-button'
 import Link from 'next/link';
 import { Button } from '~/components/ui/button';
+import { Plus, PlusIcon } from 'lucide-react';
 
 interface ServerSidebarProps {
   servers: {
@@ -21,11 +22,13 @@ export function ServerSidebar({
 }: ServerSidebarProps) {
   return (
     <div className="h-full w-[72px] flex flex-col items-center bg-[#e6e6e6] py-3">
-        <Link href='/createserver'>
-            <Button className='w-12 h-12 rounded-[24px] bg-[#313338] hover:rounded-[16px] transition-all duration-200 group relative'>
-                
-            </Button>
-        </Link>
+      <div className='group'>
+          <Link href='/createserver'>
+              <Button size={'icon'} className='w-12 h-12 rounded-[24px] bg-neutral-700 group-hover:bg-emerald-500 hover:rounded-[16px] transition-all duration-200 group relative p-0 text-emerald-300 hover:text-slate-800'>
+                  <Plus strokeWidth={2.2} className='h-full w-full'/>
+              </Button>
+          </Link>
+      </div>
       <Separator className="my-2 w-12 h-[2px] bg-[#313338] rounded-lg" />
       <ScrollArea className="flex-1 w-full">
         <div className="flex flex-col items-center space-y-2">
