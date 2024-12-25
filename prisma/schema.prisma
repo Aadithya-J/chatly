@@ -72,6 +72,8 @@ model User {
     Member Member[]
 
     Channel Channel[]
+
+    Message Message[]
 }
 
 model VerificationToken {
@@ -132,5 +134,20 @@ model Channel {
 
     @@index([profileId])
     @@index([serverId])
+    Message Message[]
 }
 
+model Message {
+    id        String   @id @default(cuid())
+    content   String
+    createdAt DateTime @default(now())
+
+    channelId String    
+    channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+    profileId String
+    user      User     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+    @@index([channelId])
+    @@index([profileId])
+}
