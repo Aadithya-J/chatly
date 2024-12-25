@@ -20,8 +20,8 @@ export function ChannelButton({ channel, serverId ,isSelected }: ChannelButtonPr
       <Button
       variant="ghost"
       className={cn(
-        'w-full px-2 py-1 h-auto flex items-center justify-start space-x-2 hover:bg-[#bebebe] dark:bg-zinc-700 rounded-sm',
-        isSelected && 'bg-[#ffffff]',
+        'w-full px-2 py-1 h-auto flex items-center justify-start space-x-2 bg-zinc-200/50 hover:bg-[#bebebe] dark:bg-zinc-700 rounded-sm',
+        isSelected && 'bg-zinc-200',
         isSelected && 'dark:bg-[#2c2e32]',
       )}
     >

@@ -39,7 +39,7 @@ export const ServerDropdown: React.FC<ServerDropdownProps> = ({
 
             </div>
           </div>
-          <Separator className="w-full h-[2px] bg-[#252525] rounded-lg" />
+          <Separator className="w-full h-[2px] bg-zinc-400 dark:bg-[#252525] rounded-lg" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-60">
         <DropdownMenuItem>

@@ -35,7 +35,7 @@ export function ChannelSidebar({
       {isLoading && <RotatingLoader />}
       {!isLoading && (
         <>
-          <div className='bg-[#202020]'>
+          <div className='bg-zinc-400/30 dark:bg-[#202020]'>
             <ServerDropdown serverName={serverName} serverId={serverId}/>
           </div>
           
