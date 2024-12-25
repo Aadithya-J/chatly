@@ -2,7 +2,7 @@
 
 import { type Channel,ChannelType } from '@prisma/client';
 import { ScrollArea } from '~/components/ui/scroll-area';
-import { ChannelButton } from './channel-button';
+import { ChannelButton } from './navigation/channel-button';
 import ServerDropdown from './server-dropdown';
 
 interface ChannelSidebarProps {

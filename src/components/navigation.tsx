@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { ServerSidebar } from './server-sidebar';
-import { ChannelSidebar } from './channel-sidebar';
+import { ServerSidebar } from '~/components/navigation/server-sidebar';
+import { ChannelSidebar } from '~/components/navigation/channel-sidebar';
 import type { Channel } from '@prisma/client';
 import { useServers, useChannels } from "~/hooks/api-utils";
 

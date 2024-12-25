@@ -3,9 +3,9 @@
 import { type Server } from '@prisma/client';
 import { ScrollArea } from '~/components/ui/scroll-area';
 import { Separator } from '~/components/ui/separator';
-import { ServerButton } from './server-button';
+import { ServerButton } from '~/components/navigation/server-button'
 import Link from 'next/link';
-import { Button } from './ui/button';
+import { Button } from '~/components/ui/button';
 
 interface ServerSidebarProps {
   servers: Server[];
