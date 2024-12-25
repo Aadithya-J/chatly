@@ -1,9 +1,17 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import type { PrismaClient } from "@prisma/client";
 import { auth } from "~/server/auth";
 import { ChannelType, MemberRole } from "@prisma/client";
 export const serverRouter = createTRPCRouter({
+  getUser: publicProcedure
+    .query(async () => {
+      const session = await auth();
+      if (!session?.user) {
+        return null;
+      }
+      return session.user;
+    }),
   create: protectedProcedure
     .input(
       z.object({

@@ -53,6 +53,14 @@ export const useFirstChannelId = (serverId: string): {
   isError: boolean
 } => {
   try {
+    console.log("useFirstChannelId:\n\n serverId",serverId)
+    if(!serverId){
+      return {
+        firstChannelId: '',
+        isLoading: false,
+        isError: false
+      }
+    }
     const { data: firstChannelId,isLoading,isError } = api.server.getFirstChannelId.useQuery(
       {serverId}
     );
