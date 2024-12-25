@@ -1,12 +1,15 @@
 'use client';
 
-import { type Channel,ChannelType } from '@prisma/client';
+import { type Channel } from '@prisma/client';
 import { ScrollArea } from '~/components/ui/scroll-area';
-import { ChannelButton } from './navigation/channel-button';
+import { ChannelButton } from '~/components/navigation/channel-button';
 import ServerDropdown from './server-dropdown';
 
 interface ChannelSidebarProps {
-  channels: Channel[];
+  channels: {
+    text: Channel[] | null;
+    voice: Channel[] | null;
+  }
   selectedChannelId: string;
   serverId: string;
   onChannelSelect: (channelId: string) => void;
@@ -20,8 +23,8 @@ export function ChannelSidebar({
   serverName,
   serverId
 }: ChannelSidebarProps) {
-  const textChannels = channels.filter(c => c.type === ChannelType.TEXT);
-  const voiceChannels = channels.filter(c => c.type === ChannelType.VOICE);
+  const textChannels = channels.text ?? [];
+  const voiceChannels = channels.voice ?? [];
   
   return (
     <div className="relative h-full w-60 bg-[#e6e6e6]">

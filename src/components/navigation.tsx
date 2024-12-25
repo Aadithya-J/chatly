@@ -13,8 +13,7 @@ export function Navigation() {
   const { servers = [] } = useServers();
   const { channels: channelData } = useChannels(selectedServerId) ?? {};
 
-  const channels: Channel[] = selectedServerId === 'home' ? [] : 
-    [...(channelData?.text ?? []), ...(channelData?.voice ?? [])];
+  const channels: {text: Channel[] | null ,voice: Channel[]| null} = channelData ?? {text: [], voice: []};
 
   const selectedServer = servers.find(s => s.id === selectedServerId);
 
