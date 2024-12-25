@@ -22,7 +22,7 @@ export function ChannelButton({ channel, serverId ,isSelected }: ChannelButtonPr
       className={cn(
         'w-full px-2 py-1 h-auto flex items-center justify-start space-x-2 hover:bg-[#bebebe] dark:bg-zinc-700 rounded-sm',
         isSelected && 'bg-[#ffffff]',
-        isSelected && 'dark:bg-zinc-800'
+        isSelected && 'dark:bg-[#2c2e32]',
       )}
     >
       <Icon className="w-4 h-4 text-zinc-400 shrink-0" />
