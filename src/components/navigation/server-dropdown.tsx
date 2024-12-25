@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { Separator } from "../ui/separator";
 
 interface ServerDropdownProps {
   serverName: string;
@@ -24,8 +25,8 @@ export const ServerDropdown: React.FC<ServerDropdownProps> = ({
 
   return (
     <DropdownMenu onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger className="w-full p-2 text-left hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50">
-          <div className="border-b border-[#2c2e32]">
+      <DropdownMenuTrigger className="w-full p-1 text-left hover:bg-zinc-800/10 dark:hover:bg-zinc-800/50">
+          <div className="">
             <div className="flex flex-row">
               <h2 className="text-base p-2 font-semibold text-slate-600 truncate">{serverName}</h2>
               <div className="ml-auto p-2">
@@ -38,6 +39,7 @@ export const ServerDropdown: React.FC<ServerDropdownProps> = ({
 
             </div>
           </div>
+          <Separator className="w-full h-[2px] bg-[#252525] rounded-lg" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-60">
         <DropdownMenuItem>

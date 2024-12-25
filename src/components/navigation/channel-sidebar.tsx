@@ -35,7 +35,10 @@ export function ChannelSidebar({
       {isLoading && <RotatingLoader />}
       {!isLoading && (
         <>
-          <ServerDropdown serverName={serverName} serverId={serverId}/>
+          <div className='bg-[#202020]'>
+            <ServerDropdown serverName={serverName} serverId={serverId}/>
+          </div>
+          
           <ScrollArea className="h-[calc(100%-4rem)]">
             <div className="p-2 space-y-4">
               {textChannels.length > 0 && (
