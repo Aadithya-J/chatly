@@ -13,17 +13,21 @@ interface ChannelSidebarProps {
   selectedChannelId: string;
   serverId: string;
   serverName: string;
+  isLoading: boolean;
 }
 
 export function ChannelSidebar({
   channels,
   selectedChannelId,
   serverName,
-  serverId
+  serverId,
+  isLoading
 }: ChannelSidebarProps) {
   const textChannels = channels.text ?? [];
   const voiceChannels = channels.voice ?? [];
-  
+  if(isLoading){
+    return <div>Loading...</div>;
+  }
   return (
     <div className="relative h-full w-60 bg-[#e6e6e6]">
       {/* <div className="p-4 border-b border-[#2c2e32]">

@@ -8,8 +8,6 @@ export const useServers = (): {
   isLoading: boolean,
   refetch: ReturnType<typeof api.server.getServers.useQuery>['refetch'];
 } => {
-  console.log("useServers")
-  console.log(api.server.getServers.useQuery())
   const { data: servers, isLoading, refetch } = api.server.getServers.useQuery();
   if(servers === undefined || servers === null){
     return { serversData: [], isLoading , refetch};
@@ -51,3 +49,26 @@ export const useChannels = (serverId: string):{
     }, isLoading: true };
   }
 };
+export const useFirstChannelId = (serverId: string): {
+  firstChannelId: string,
+  isLoading: boolean,
+  isError: boolean
+} => {
+  try {
+    const { data: firstChannelId,isLoading,isError } = api.server.getFirstChannelId.useQuery(
+      {serverId}
+    );
+    return {
+      firstChannelId: firstChannelId ?? '',
+      isLoading,
+      isError
+    }
+  } catch (err){
+    console.log(err);
+    return {
+      firstChannelId: '',
+      isLoading: true,
+      isError: true
+    }
+  }
+}

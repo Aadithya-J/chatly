@@ -16,13 +16,15 @@ interface ServerSidebarProps {
     firstTextChannelId: string;
   }[],
   selectedServerId: string
-  refetch: ReturnType<typeof api.server.getServers.useQuery>['refetch'];
+  refetch: ReturnType<typeof api.server.getServers.useQuery>['refetch']
+  isLoading: boolean;
 }
 
 export function ServerSidebar({
   servers,
   selectedServerId,
-  refetch
+  refetch,
+  isLoading
 }: ServerSidebarProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -33,7 +35,9 @@ export function ServerSidebar({
   const handleDialogOpen = () => {
     setIsDialogOpen(true);
   };
-
+  if(isLoading){
+    return <div>Loading...</div>;
+  }
   return (
     <div className="h-full w-[72px] flex flex-col items-center bg-[#e6e6e6] py-3">
       <div className='group'>

@@ -121,4 +121,33 @@ export const serverRouter = createTRPCRouter({
         ),
       };
     }),
+    getFirstChannelId: protectedProcedure
+    .input(z.object({ serverId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const serverData = await ctx.db.server.findUnique({
+        where: { id: input.serverId },
+        include: {
+          Channel: {
+            take: 1,  // Fetch only the first channel
+            orderBy: {
+              name: "asc",
+            },
+            select: {
+              id: true,
+              name: true,
+              type: true,
+              profileId: true,
+              serverId: true,
+            },
+          },
+        },
+      });
+  
+      if (!serverData) {
+        console.log("server not found");
+        return null;
+      }
+  
+      return serverData.Channel?.[0]?.id ?? null;
+    }),
 });
