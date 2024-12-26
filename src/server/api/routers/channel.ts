@@ -14,7 +14,14 @@ export const channelRouter = createTRPCRouter({
         const channelId = input.channelId;
         const channel = await prisma.channel.findUnique({
             where: {
-                id: channelId
+                id: channelId,
+            },
+            include: {
+                messages: {
+                    orderBy: {
+                        createdAt: 'asc'
+                    }
+                }
             }
         });
         if (!channel) {
