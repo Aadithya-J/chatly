@@ -26,5 +26,5 @@ export default function RedirectLayout({
     return <LoadingScreen />;
   }
 
-  return isUserVerified ? <div className="h-full bg-zinc-500 dark:bg-zinc-800">{children}</div> : null;
+  return isUserVerified ? <div className="h-full bg-zinc-200 dark:bg-zinc-800">{children}</div> : null;
 }
