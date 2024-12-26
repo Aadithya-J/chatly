@@ -6,9 +6,8 @@ import { ChannelButton } from '~/components/navigation/channel-button';
 import { ServerDropdown } from './server-dropdown';
 import RotatingLoader from '../loader';
 import { Plus } from 'lucide-react';
-import { Button } from '../ui/button';
 import { useState } from 'react';
-import CreateChannelDialog from './create-channel-dialog';
+import CreateChannelDialog from '../dialogs/create-channel-dialog';
 interface ChannelSidebarProps {
   channels: {
     text: Channel[] | null;
@@ -52,13 +51,13 @@ export function ChannelSidebar({
             <div className="p-2 space-y-4">
               {textChannels.length > 0 && (
                 <div className="space-y-[2px]">
-                  <div className="flex items-center">
+                  <div className="flex items-center p-2">
                     <h3 className="px-2 text-xs font-semibold text-zinc-400 uppercase mb-1">
                       Text Channels
                     </h3>
-                    <Button onClick={handleCreateDialogOpen} size={'sm'} className='ml-auto bg-zinc-300 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'>
+                    <button onClick={handleCreateDialogOpen}className='ml-auto bg-zinc-300 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700'>
                       <Plus strokeWidth={2.2} className="h-5 w-5 text-zinc-400 ml-auto" />
-                    </Button>
+                    </button>
                       <CreateChannelDialog isOpen={isCreateDialogOpen} onClose={handleCreateDialogClose} type={'text'}/>
                   </div>
                   {textChannels.map((channel) => (

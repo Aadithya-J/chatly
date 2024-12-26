@@ -6,7 +6,7 @@ import { Separator } from '~/components/ui/separator';
 import { ServerButton } from '~/components/navigation/server-button'
 import { Button } from '~/components/ui/button';
 import { Plus } from 'lucide-react';
-import CreateServerDialog from '~/components/create-server-dialog';
+import CreateServerDialog from '~/components/dialogs/create-server-dialog';
 import { useState } from 'react';
 import { LoadingScreen } from '../loading-screen';
 import { ModeToggle } from '../mode-toggle';
