@@ -56,7 +56,7 @@ model User {
   accounts      Account[]
   Channel       Channel[]
   Member        Member[]
-  Message       Message[]
+  messages    Message[]
   posts         Post[]
   Server        Server[]
   sessions      Session[]
@@ -102,7 +102,7 @@ model Channel {
   serverId  String
   user      User        @relation(fields: [profileId], references: [id], onDelete: Cascade)
   server    Server      @relation(fields: [serverId], references: [id], onDelete: Cascade)
-  Message   Message[]
+  messages Message[]
 
   @@index([profileId])
   @@index([serverId])
