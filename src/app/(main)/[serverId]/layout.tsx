@@ -22,5 +22,9 @@ export default async function authRedirectLayout({
     if(!member){
       redirect('/')
     }
-    return children;
+    return (
+    <div className="h-full dark:bg-zinc-900 bg-zinc-400">
+      {children}
+    </div>
+    );
 }

@@ -7,7 +7,7 @@ export default function Page() {
   const { data: channel } = api.channel.getChannelById.useQuery({ channelId })
   console.log(channel);
   return (
-      <div className='flex flex-col gap-4 justify-center items-center bg-zinc-300 dark:bg-zinc-900'>
+      <div className='flex flex-col gap-4 justify-center items-center bg-zinc-400 dark:bg-zinc-900'>
         {/* <p>Server ID: {params.serverId}</p>
         <p>Channel ID: {params.channelId}</p> */}
         <h1 className='text-3xl'>Welcome to #{channel?.name}</h1>
