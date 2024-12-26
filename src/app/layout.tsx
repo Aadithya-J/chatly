@@ -29,7 +29,7 @@ export default async function RootLayout({
           >
             <div className="flex p-0 min-h-screen">
               {session?.user && <Navigation />}
-              <main className="flex-1 w-full p-2 border-zinc-700 border-2">
+              <main className="flex-1 w-full border-zinc-400 dark:border-zinc-700 border-2">
                 {children}
               </main>
             </div>
