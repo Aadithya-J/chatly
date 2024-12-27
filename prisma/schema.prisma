@@ -56,7 +56,6 @@ model User {
   accounts      Account[]
   Channel       Channel[]
   Member        Member[]
-  messages    Message[]
   posts         Post[]
   Server        Server[]
   sessions      Session[]
@@ -92,6 +91,7 @@ model Member {
   server    Server     @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
   @@index([profileId])
+  Message Message[]
 }
 
 model Channel {
@@ -113,12 +113,11 @@ model Message {
   content   String
   createdAt DateTime @default(now())
   channelId String
-  profileId String
+  memberId  String
   channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [profileId], references: [id], onDelete: Cascade)
-
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
   @@index([channelId])
-  @@index([profileId])
+  @@index([memberId])
 }
 
 enum MemberRole {
