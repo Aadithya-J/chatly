@@ -4,7 +4,7 @@ import { useFirstChannelId } from "~/hooks/api-utils"
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect } from "react";
 
-export default function Page() {
+export default function ServerRedirect() {
   const router = useRouter()
   const params = useParams() ?? {};
   const serverId = Array.isArray(params.serverId) ? params.serverId[0] ?? '' : params.serverId ?? ''
