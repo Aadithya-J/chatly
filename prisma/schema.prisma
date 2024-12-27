@@ -55,10 +55,11 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   Channel       Channel[]
-  Member        Member[]
   posts         Post[]
   Server        Server[]
   sessions      Session[]
+
+  Message Message[]
 }
 
 model VerificationToken {
@@ -74,24 +75,8 @@ model Server {
   name       String
   image      String
   inviteCode String
-  profileId  String
   Channel    Channel[]
-  Member     Member[]
-  user       User      @relation(fields: [profileId], references: [id], onDelete: Cascade)
-
-  @@index([profileId])
-}
-
-model Member {
-  id        String     @id @default(uuid())
-  role      MemberRole @default(MEMBER)
-  profileId String
-  serverId  String
-  user      User       @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  server    Server     @relation(fields: [serverId], references: [id], onDelete: Cascade)
-
-  @@index([profileId])
-  Message Message[]
+  members    User[]
 }
 
 model Channel {
@@ -113,11 +98,11 @@ model Message {
   content   String
   createdAt DateTime @default(now())
   channelId String
-  memberId  String
+  userId  String
   channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  member    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([channelId])
-  @@index([memberId])
+  @@index([userId])
 }
 
 enum MemberRole {
