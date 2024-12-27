@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import type { PrismaClient } from "@prisma/client";
+import type { Channel, PrismaClient } from "@prisma/client";
 import { auth } from "~/server/auth";
-import { ChannelType, MemberRole } from "@prisma/client";
+import { ChannelType } from "@prisma/client";
 export const serverRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
@@ -28,13 +28,17 @@ export const serverRouter = createTRPCRouter({
       if (!userExists || !profileId) {
         throw new Error("User not found");
       }
-      // Create the server with the default channel
+      // Create the server with the default channel and add the current
       const server = await prisma.server.create({
         data: {
           name,
           image,
           inviteCode,
-          profileId,
+          members:{
+            connect: {
+              id: profileId,
+            }
+          },
           Channel: {
             create: [
               {
@@ -42,12 +46,6 @@ export const serverRouter = createTRPCRouter({
                 profileId,
               },
             ],
-          },
-          Member: {
-            create: {
-              profileId,
-              role: MemberRole.ADMIN,
-            },
           },
         },
         include: {
@@ -58,31 +56,43 @@ export const serverRouter = createTRPCRouter({
       return server;
     }),
 
-    getServers: protectedProcedure.query(async ({ ctx }) => {
+    getServers: protectedProcedure
+    .query(async ({ ctx }) => {
       const session = await auth();
       if (!session?.user) {
         throw new Error("Unauthorized");
       }
-    
       const servers = await ctx.db.server.findMany({
         where: {
-          profileId: session.user.id,
+          members: {
+            some: {
+              id: session.user.id,
+            },
+          },
         },
         include: {
           Channel: {
             where: {
-              type: 'TEXT', // Ensure only text channels are fetched
+              type: ChannelType.TEXT,
             },
-            take: 1, // Fetch only the first channel
-            orderBy: { name: "asc" },
-          },
+            take: 1,
+          }
         },
       });
-    
-      return servers.map(server => ({
-        ...server,
-        firstTextChannel: server.Channel?.[0] ?? null, 
-      }));
+      if (!servers) {
+        return null;
+      }
+
+      const processedServers = servers.map((server) => {
+        const channels = server.Channel as Channel[];
+        const firstChannel = channels[0];
+        return {
+          ...server,
+          firstChannelId: firstChannel?.id ?? null,
+        };
+      });
+  
+      return processedServers;
     }),
     
 
@@ -168,16 +178,5 @@ export const serverRouter = createTRPCRouter({
         },
       });
       return channel;
-    }),
-    getMember: protectedProcedure
-    .input(z.object({ serverId: z.string(), profileId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const member = await ctx.db.member.findFirst({
-        where: {
-          serverId: input.serverId,
-          profileId: input.profileId,
-        },
-      });
-      return member;
     }),
 });

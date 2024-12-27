@@ -39,7 +39,7 @@ export function WebSocketProvider({
     if(!isMounted){
       return;
     }
-    const ws = new WebSocket(`ws://localhost:3000/api/ws?token=2f427328-e565-49ad-9abc-938bcb26a372`);
+    const ws = new WebSocket(`ws://localhost:3000/api/ws?token=${token}`);
 
     ws.onopen = () => {
       console.log("WebSocket connected");

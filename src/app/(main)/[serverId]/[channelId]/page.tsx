@@ -1,13 +1,14 @@
 'use client';
 import { useParams } from 'next/navigation'
 import { ChatInput } from '~/components/chat/chat-input';
+import { LoadingScreen } from '~/components/loading-screen';
 import { api } from '~/trpc/react'
 export default function ChannelPage() {
   const params = useParams() ?? {};
   const channelId =  Array.isArray(params.channelId) ? params.channelId[0] ?? '' : params.channelId ?? ''
   const { data: channel } = api.channel.getChannelById.useQuery({ channelId })
   if(!channel){
-    return <h1>Channel not found</h1>
+    return <LoadingScreen/>
   }
   return (
       <div className='flex flex-col gap-4 justify-center items-center bg-zinc-400 dark:bg-zinc-900'>

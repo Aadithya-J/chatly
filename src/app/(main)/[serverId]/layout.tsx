@@ -13,13 +13,19 @@ export default async function authRedirectLayout({
         redirect('/')
     }
     const serverId = (await params).serverId;
-    const member = await db.member.findFirst({
+    const server = await db.server.findUnique({
         where: {
-            profileId: session.user.id,
-            serverId: serverId
-        }
-    })
-    if(!member){
+          id: serverId,
+        },
+        include: {
+          members: {
+            where: {
+              id: session.user.id,
+            },
+          },
+        },
+      });
+    if(!server){
       redirect('/')
     }
     return (
