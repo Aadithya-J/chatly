@@ -41,7 +41,7 @@ export default function CreateChannelDialog({
   onClose,
   type,
 }: CreateChannelDialogProps) {
-  const params = useParams();
+  const params = useParams() ?? {};
   const serverId = Array.isArray(params.serverId) ? params.serverId[0] ?? "" : params.serverId ?? "";
 
   const utils = api.useUtils();

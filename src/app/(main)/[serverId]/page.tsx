@@ -6,7 +6,7 @@ import { useEffect } from "react";
 
 export default function Page() {
   const router = useRouter()
-  const params = useParams()
+  const params = useParams() ?? {};
   const serverId = Array.isArray(params.serverId) ? params.serverId[0] ?? '' : params.serverId ?? ''
   const { firstChannelId, isLoading, isError } = useFirstChannelId(serverId)
   useEffect(() => {

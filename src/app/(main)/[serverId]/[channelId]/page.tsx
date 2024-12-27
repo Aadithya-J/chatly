@@ -2,7 +2,7 @@
 import { useParams } from 'next/navigation'
 import { api } from '~/trpc/react'
 export default function Page() {
-  const params = useParams()
+  const params = useParams() ?? {};
   const channelId =  Array.isArray(params.channelId) ? params.channelId[0] ?? '' : params.channelId ?? ''
   const { data: channel } = api.channel.getChannelById.useQuery({ channelId })
   return (
