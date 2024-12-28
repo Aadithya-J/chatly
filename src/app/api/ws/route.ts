@@ -27,7 +27,7 @@ export async function SOCKET(
   console.log('token:', token);
 
   if (!token) {
-    client.send('No token provided');
+    client.send('log:No token provided');
     client.close();
     return;
   }
@@ -39,7 +39,7 @@ export async function SOCKET(
     });
 
     if (!session) {
-      client.send('Invalid token');
+      client.send('log:Invalid token');
       client.close();
       return;
     }
@@ -48,11 +48,11 @@ export async function SOCKET(
     const now = new Date();
     const expires = session.expires;
     if (now > expires) {
-      client.send('Session has expired');
+      client.send('log:Session has expired');
       client.close();
       return;
     } else {
-      client.send('Session is valid');
+      client.send('log:Session is valid');
     }
 
     // Setup message handler
@@ -64,31 +64,26 @@ export async function SOCKET(
       try {
         parsedMessage = JSON.parse(messageString) as MessageType;
         console.log('Parsed message:', parsedMessage);
-        client.send('Handling Message')
+        client.send('log:Handling Message')
         handleMessage(client, parsedMessage, session)
           .then(() => {
-            server.clients.forEach((c) => {
-              if (c !== client && c.readyState === WebSocket.OPEN) {
-                c.send('new-message-received');
-              }
-            });
+            console.log('clients: ',server.clients);
+            server.clients.forEach((cl) => {
+              cl.send('received-new-message:');
+            })
           }).catch((error) => console.error('Error handling message:', error));
       } catch (error) {
         console.error('Error handling message:', error);
-        client.send('Error handling message');
+        client.send('log:Error handling message');
       } 
     });
-
-    client.on('new-message', (message) => {
-      console.log('New message:', message);
-    })
     // Handle client disconnect
     client.on('close', () => {
       console.log('A client disconnected');
     });
   } catch(error) {
       console.error('Error fetching session:', error);
-      client.send('Error validating session');
+      client.send('log:Error validating session');
       client.close();
   }
 }

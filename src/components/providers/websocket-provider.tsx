@@ -45,7 +45,6 @@ export function WebSocketProvider({
       console.log("WebSocket connected");
       setIsConnected(true);
     };
-
     ws.onmessage = (event) => {
       console.log("WebSocket message received:", event.data);
     };
