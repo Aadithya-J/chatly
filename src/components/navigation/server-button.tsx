@@ -16,7 +16,7 @@ interface ServerButtonProps {
 
 export function ServerButton({name, imageUrl, id, isSelected, firstTextChannelId }: ServerButtonProps) {
   return (
-    <Link href={`/${id}/${firstTextChannelId}`}>
+    <Link href={`/${id}/${firstTextChannelId}`} scroll={false}>
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>

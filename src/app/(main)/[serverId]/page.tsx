@@ -11,7 +11,7 @@ export default function ServerRedirect() {
   const { firstChannelId, isLoading, isError } = useFirstChannelId(serverId)
   useEffect(() => {
     if (!isLoading && !isError && firstChannelId) {
-      router.push(`/${serverId}/${firstChannelId}`)
+      router.push(`/${serverId}/${firstChannelId}`,{ scroll: false })
     }
   }, [firstChannelId, serverId, isLoading, isError, router])
   

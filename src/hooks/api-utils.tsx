@@ -53,7 +53,6 @@ export const useFirstChannelId = (serverId: string): {
   isError: boolean
 } => {
   try {
-    console.log("useFirstChannelId:\n\n serverId",serverId)
     if(!serverId){
       return {
         firstChannelId: '',

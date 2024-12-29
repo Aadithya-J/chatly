@@ -28,7 +28,7 @@ export function ChannelButton({
   };
   return (
     <>
-      <Link href={`/${serverId}/${channel.id}`}>
+      <Link href={`/${serverId}/${channel.id}`} scroll={false}>
         <div
           className={cn(
             "group flex h-auto w-full items-center justify-start space-x-2 rounded-sm bg-zinc-200/50 px-2 py-1 hover:bg-zinc-200 dark:bg-[#2c2e32] dark:hover:bg-zinc-700",

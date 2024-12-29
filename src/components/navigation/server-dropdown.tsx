@@ -40,13 +40,13 @@ export const ServerDropdown: React.FC<ServerDropdownProps> = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-60">
         <DropdownMenuItem>
-          <Link href={`/server/${serverId}/settings`}>Server Settings</Link>
+          <Link href={`/server/${serverId}/settings`} scroll={false}>Server Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href={`/server/${serverId}/invite`}>Invite People</Link>
+          <Link href={`/server/${serverId}/invite`} scroll={false}>Invite People</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href={`/server/${serverId}/leave`}>Leave Server</Link>
+          <Link href={`/server/${serverId}/leave`} scroll={false}>Leave Server</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
