@@ -1,7 +1,11 @@
 "use client";
-
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { LoadingScreen } from "~/components/loading-screen";
+import { type MessageType, MessageTypes } from "~/types";
+
+const INITIAL_RETRY_DELAY = 1000;
+const MAX_RETRY_DELAY = 30000;
+const MAX_RETRIES = 5;
 
 type WebSocketContextType = {
   socket: WebSocket | null;
@@ -19,6 +23,11 @@ export const useWebSocket = () => {
   return context;
 };
 
+type QueuedMessage = {
+  message: string;
+  timestamp: number;
+};
+
 export function WebSocketProvider({
   children,
   token
@@ -27,53 +36,168 @@ export function WebSocketProvider({
   token: string;
 }) {
   const [isMounted, setIsMounted] = useState(false);
-  
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-  
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
-  useEffect(() => {
-    if(!isMounted){
+  const reconnectAttempts = useRef(0);
+  const reconnectTimeout = useRef<NodeJS.Timeout>();
+  const currentRetryDelay = useRef(INITIAL_RETRY_DELAY);
+  const ws = useRef<WebSocket | null>(null);
+
+  const messageQueue = useRef<QueuedMessage[]>([]);
+  const isProcessingQueue = useRef(false);
+
+  const handleLogMessage = useCallback((data: string) => {
+    console.log("Log message received:", data);
+  }, []);
+
+  const handleMessageSent = useCallback((data: string, channelId: string, serverId: string) => {
+    console.log("Message sent:", data, "in channel:", channelId, "on server:", serverId);
+  }, []);
+
+  const handleNewText = useCallback((data: string, channelId: string, serverId: string) => {
+    console.log("New text received:", data, "in channel:", channelId, "on server:", serverId);
+  }, []);
+
+  const connectWebSocket = useCallback(() => {
+    if (ws.current?.readyState === WebSocket.OPEN) {
       return;
     }
-    const ws = new WebSocket(`ws://localhost:3000/api/ws?token=${token}`);
 
-    ws.onopen = () => {
-      console.log("WebSocket connected");
-      setIsConnected(true);
-    };
-    ws.onmessage = (event) => {
-      console.log("WebSocket message received:", event.data);
-    };
+    try {
+      ws.current = new WebSocket(`ws://localhost:3000/api/ws?token=${token}`);
+      
+      ws.current.onopen = () => {
+        console.log("WebSocket connected");
+        setIsConnected(true);
+        setSocket(ws.current);
+        reconnectAttempts.current = 0;
+        currentRetryDelay.current = INITIAL_RETRY_DELAY;
+        processMessageQueue();
+      };
 
-    ws.onclose = () => {
-      console.log("WebSocket disconnected");
-      setIsConnected(false);
-    };
+      ws.current.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data as string) as MessageType;
+          const { type, data, channelId, serverId } = message;
+          
+          switch (type) {
+            case MessageTypes.LOG:
+              handleLogMessage(data);
+              break;
+            case MessageTypes.MESSAGE_SENT:
+              handleMessageSent(data, channelId, serverId);
+              break;
+            case MessageTypes.NEW_TEXT:
+              handleNewText(data, channelId, serverId);
+              break;
+            default:
+              console.warn("Invalid message type:", type);
+          }
+        } catch (error) {
+          console.error("Failed to parse WebSocket message:", error);
+        }
+      };
 
-    setSocket(ws);
+      ws.current.onclose = (event) => {
+        console.log("WebSocket disconnected:", event.code, event.reason);
+        setIsConnected(false);
+        setSocket(null);
+
+        if (!event.wasClean && reconnectAttempts.current < MAX_RETRIES) {
+          const delay = Math.min(currentRetryDelay.current * (1.5 ** reconnectAttempts.current), MAX_RETRY_DELAY);
+          console.log(`Attempting to reconnect in ${delay}ms...`);
+          
+          reconnectTimeout.current = setTimeout(() => {
+            reconnectAttempts.current += 1;
+            currentRetryDelay.current = delay;
+            connectWebSocket();
+          }, delay);
+        } else if (reconnectAttempts.current >= MAX_RETRIES) {
+          console.error("Max reconnection attempts reached. Please refresh the page.");
+        }
+      };
+
+      ws.current.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+
+    } catch (error) {
+      console.error("Failed to create WebSocket connection:", error);
+    }
+  }, [token, handleLogMessage, handleMessageSent, handleNewText]);
+
+  const processMessageQueue = useCallback(() => {
+    if (isProcessingQueue.current || messageQueue.current.length === 0 || !ws.current) {
+      return;
+    }
+
+    isProcessingQueue.current = true;
+
+    while (messageQueue.current.length > 0 && ws.current?.readyState === WebSocket.OPEN) {
+      const { message } = messageQueue.current[0]!;
+      try {
+        ws.current.send(message);
+        messageQueue.current.shift();
+      } catch (error) {
+        console.error("Failed to send queued message:", error);
+        break;
+      }
+    }
+
+    isProcessingQueue.current = false;
+  }, []);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) {
+      return;
+    }
+
+    connectWebSocket();
 
     return () => {
-      ws.close();
+      if (ws.current) {
+        ws.current.close(1000, "Component unmounting");
+      }
+      if (reconnectTimeout.current) {
+        clearTimeout(reconnectTimeout.current);
+      }
     };
-  }, [token,isMounted]);
-  if(!isMounted){
-    return <LoadingScreen />
-  }
-  const sendMessage = (message: string) => {
-    if (socket && isConnected) {
+  }, [isMounted, connectWebSocket]);
+
+  const sendMessage = useCallback((message: string): void => {
+    if (ws.current?.readyState === WebSocket.OPEN) {
       try {
-        socket.send(message);
+        ws.current.send(message);
       } catch (error) {
-        console.error("Failed to send message via WebSocket:", error);
+        console.error("Failed to send message:", error);
+        messageQueue.current.push({
+          message,
+          timestamp: Date.now()
+        });
       }
     } else {
-      console.error("WebSocket is not connected");
+      messageQueue.current.push({
+        message,
+        timestamp: Date.now()
+      });
+      console.log("Message queued - WebSocket not ready");
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (isConnected) {
+      processMessageQueue();
+    }
+  }, [isConnected, processMessageQueue]);
+
+  if (!isMounted) {
+    return <LoadingScreen />;
+  }
 
   return (
     <WebSocketContext.Provider value={{ socket, isConnected, sendMessage }}>

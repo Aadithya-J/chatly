@@ -84,7 +84,7 @@ export const serverRouter = createTRPCRouter({
       }
 
       const processedServers = servers.map((server) => {
-        const channels = server.Channel as Channel[];
+        const channels = server.Channel ?? [];
         const firstChannel = channels[0];
         return {
           ...server,
