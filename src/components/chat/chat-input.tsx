@@ -28,10 +28,6 @@ export function ChatInput({ channelId, serverId }: ChatInputProps) {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (!isConnected) {
-      console.error("WebSocket is not connected");
-      return;
-    }
 
     setIsSending(true);
     const message = {

@@ -24,8 +24,6 @@ export function SwitchServerLayout({
       sendMessage(JSON.stringify(switchMessage));
     }
   }, [isConnected, serverId, sendMessage]);
-
-  if (!isConnected) return null;
   
   return <>{children}</>;
 }

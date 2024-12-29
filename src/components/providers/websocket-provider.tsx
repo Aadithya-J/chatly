@@ -59,6 +59,28 @@ export function WebSocketProvider({
     console.log("New text received:", data, "in channel:", channelId, "on server:", serverId);
   }, []);
 
+
+  const processMessageQueue = useCallback(() => {
+    if (isProcessingQueue.current || messageQueue.current.length === 0 || !ws.current) {
+      return;
+    }
+
+    isProcessingQueue.current = true;
+
+    while (messageQueue.current.length > 0 && ws.current?.readyState === WebSocket.OPEN) {
+      const { message } = messageQueue.current[0]!;
+      try {
+        ws.current.send(message);
+        messageQueue.current.shift();
+      } catch (error) {
+        console.error("Failed to send queued message:", error);
+        break;
+      }
+    }
+
+    isProcessingQueue.current = false;
+  }, []);
+
   const connectWebSocket = useCallback(() => {
     if (ws.current?.readyState === WebSocket.OPEN) {
       return;
@@ -125,28 +147,7 @@ export function WebSocketProvider({
     } catch (error) {
       console.error("Failed to create WebSocket connection:", error);
     }
-  }, [token, handleLogMessage, handleMessageSent, handleNewText]);
-
-  const processMessageQueue = useCallback(() => {
-    if (isProcessingQueue.current || messageQueue.current.length === 0 || !ws.current) {
-      return;
-    }
-
-    isProcessingQueue.current = true;
-
-    while (messageQueue.current.length > 0 && ws.current?.readyState === WebSocket.OPEN) {
-      const { message } = messageQueue.current[0]!;
-      try {
-        ws.current.send(message);
-        messageQueue.current.shift();
-      } catch (error) {
-        console.error("Failed to send queued message:", error);
-        break;
-      }
-    }
-
-    isProcessingQueue.current = false;
-  }, []);
+  }, [token, processMessageQueue, handleLogMessage, handleMessageSent, handleNewText]);
 
   useEffect(() => {
     setIsMounted(true);
