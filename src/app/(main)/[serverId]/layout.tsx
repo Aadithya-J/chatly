@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
+import { SwitchServerLayout } from "~/components/switch-server-layout";
 export default async function authRedirectLayout({
     children,
     params
@@ -30,7 +31,9 @@ export default async function authRedirectLayout({
     }
     return (
     <div className="h-full dark:bg-zinc-900 bg-zinc-400">
-      {children}
+      <SwitchServerLayout>
+        {children}
+      </SwitchServerLayout>
     </div>
     );
 }

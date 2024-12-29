@@ -8,7 +8,7 @@ import { Plus } from "lucide-react";
 import { useWebSocket } from "~/components/providers/websocket-provider";
 import { Input } from "~/components/ui/input";
 import { FormControl, Form, FormField, FormItem } from "~/components/ui/form";
-
+import { MessageTypes } from "~/types";
 interface ChatInputProps {
   channelId: string;
   serverId: string;
@@ -27,7 +27,7 @@ export function ChatInput({ channelId, serverId }: ChatInputProps) {
     defaultValues: { data: "" }
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (!isConnected) {
       console.error("WebSocket is not connected");
       return;
@@ -38,9 +38,9 @@ export function ChatInput({ channelId, serverId }: ChatInputProps) {
       data: values.data,
       channelId,
       serverId,
+      type: MessageTypes.MESSAGE_SENT,
     };
 
-    // Send message through WebSocket
     sendMessage(JSON.stringify(message));
 
     form.reset();

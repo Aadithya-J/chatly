@@ -1,122 +1,178 @@
-import { WebSocket, WebSocketServer } from 'ws';
+import { WebSocket, type WebSocketServer } from 'ws';
 import type { IncomingMessage } from 'http';
 import { db } from '~/server/db';
-import type { Session } from '@prisma/client';
+import { type MessageType, MessageTypes } from "~/types";
 
-type MessageType = {
-  data: string;
-  channelId: string;
-  serverId: string;
-};
+const serverRooms: Map<string, Set<WebSocket>> = new Map<string, Set<WebSocket>>();
+
+function createMessage(
+  data: string,
+  channelId: string,
+  serverId: string,
+  type: MessageTypes
+) {
+  return JSON.stringify({ type, data, channelId, serverId });
+}
+
+function parseMessage(messageData: string) {
+  try {
+    return JSON.parse(messageData) as MessageType;
+  } catch (error) {
+    console.error('Failed to parse message as JSON:', error);
+    return null;
+  }
+}
 
 export async function SOCKET(
   client: WebSocket,
   req: IncomingMessage,
-  server: WebSocketServer
+  _server: WebSocketServer
 ) {
   console.log('A client connected');
-  console.log('request:', req.url);
-  if (!req.url) {
-    client.send('No URL provided');
-    client.close();
-    return;
-  }
-
-  const urlParams = new URLSearchParams(req.url.split('?')[1]);
+  const urlParams = new URLSearchParams(req.url?.split('?')[1]);
   const token = urlParams.get('token');
-  console.log('token:', token);
-
   if (!token) {
-    client.send('log:No token provided');
+    client.send(createMessage('No token provided', '', '', MessageTypes.LOG));
     client.close();
     return;
   }
 
   try {
-    // Validate session asynchronously
     const session = await db.session.findUnique({
       where: { sessionToken: token },
     });
 
-    if (!session) {
-      client.send('log:Invalid token');
+    if (!session || new Date() > session.expires) {
+      client.send(createMessage('Invalid or expired session', '', '', MessageTypes.LOG));
       client.close();
       return;
     }
 
-    console.log('Session:', session);
-    const now = new Date();
-    const expires = session.expires;
-    if (now > expires) {
-      client.send('log:Session has expired');
-      client.close();
-      return;
-    } else {
-      client.send('log:Session is valid');
-    }
+    client.send(createMessage('Session validated', '', '', MessageTypes.LOG));
 
-    // Setup message handler
+    let currentServerId: string | null = null;
+
     client.on('message', (message) => {
       const messageString = message instanceof Buffer ? message.toString() : JSON.stringify(message);
-      console.log('Received message:', messageString);
-      // Parse messageString as JSON
-      let parsedMessage : MessageType
-      try {
-        parsedMessage = JSON.parse(messageString) as MessageType;
-        console.log('Parsed message:', parsedMessage);
-        client.send('log:Handling Message')
-        handleMessage(client, parsedMessage, session)
-          .then(() => {
-            console.log('clients: ',server.clients);
-            server.clients.forEach((cl) => {
-              cl.send('received-new-message:');
-            })
-          }).catch((error) => console.error('Error handling message:', error));
-      } catch (error) {
-        console.error('Error handling message:', error);
-        client.send('log:Error handling message');
-      } 
+      const parsedMessage = parseMessage(messageString);
+      if (!parsedMessage) {
+        client.send(createMessage('Invalid message format', '', '', MessageTypes.LOG));
+        return;
+      }
+
+      const { type, data, channelId, serverId } = parsedMessage;
+
+      switch (type) {
+        case MessageTypes.SWITCH_SERVER:
+          console.log('Switching server to:', serverId);
+          if (currentServerId) {
+            leaveServer(client, currentServerId);
+          }
+          currentServerId = serverId;
+          joinServer(client, serverId);
+          client.send(createMessage('Switched to server', '', serverId, MessageTypes.LOG));
+          break;
+
+        case MessageTypes.MESSAGE_SENT:
+          void handleMessageSent(client, data, channelId, serverId, session.userId);
+          break;
+
+        default:
+          client.send(createMessage(`Unknown message type${type}`, '', '', MessageTypes.LOG));
+      }
     });
-    // Handle client disconnect
+
     client.on('close', () => {
+      if (currentServerId) {
+        leaveServer(client, currentServerId);
+      }
       console.log('A client disconnected');
     });
-  } catch(error) {
-      console.error('Error fetching session:', error);
-      client.send('log:Error validating session');
-      client.close();
-  }
-}
-
-// Helper function to handle message asynchronously
-async function handleMessage(client: WebSocket,messageData: MessageType ,session: Session) {
-  try {
-
-
-    // Create the message in the database
-    await db.message.create({
-      data: {
-        content: messageData.data,
-        channelId: messageData.channelId,
-        userId: session.userId,
-      },
-    });
-    console.log('Message saved');
-    client.send('Message saved');
-    return;
   } catch (error) {
-    console.error('Failed to parse message as JSON:', error);
-    client.send('error saving message message');
-    return;
+    console.error('Error during WebSocket initialization:', error);
+    client.close();
   }
-
 }
+
+async function handleMessageSent(
+  client: WebSocket,
+  data: string,
+  channelId: string,
+  serverId: string,
+  userId: string
+) {
+  try {
+    client.send(createMessage('Message received', '', '', MessageTypes.LOG));
+    await saveMessageToDb(data, channelId, userId);
+    broadcastToServer(
+      serverId,
+      createMessage(data, channelId, serverId, MessageTypes.MESSAGE_SENT),
+      client
+    );
+    broadcastToServer(
+      serverId,
+      createMessage(data, channelId, serverId, MessageTypes.NEW_TEXT),
+      client
+    );
+  } catch (error) {
+    console.error('Error handling message:', error);
+    client.send(createMessage('Error handling message', '', '', MessageTypes.LOG));
+  }
+}
+
+async function saveMessageToDb(data: string, channelId: string, userId: string) {
+  try {
+    await db.message.create({
+      data: { content: data, channelId, userId },
+    });
+    console.log('Message saved to DB');
+  } catch (error) {
+    console.log(error);
+    throw new Error('Error saving message to DB');
+  }
+}
+
+function joinServer(client: WebSocket, serverId: string) {
+  if (!serverRooms.has(serverId)) {
+    serverRooms.set(serverId, new Set());
+  }
+  serverRooms.get(serverId)!.add(client);
+}
+
+function leaveServer(client: WebSocket, serverId: string) {
+  if (serverRooms.has(serverId)) {
+    serverRooms.get(serverId)!.delete(client);
+    if (serverRooms.get(serverId)!.size === 0) {
+      serverRooms.delete(serverId);
+    }
+    broadcastToServer(
+      serverId,
+      createMessage('User left', '', serverId, MessageTypes.LOG)
+    );
+  }
+}
+
+function broadcastToServer(serverId: string, message: string, exclude?: WebSocket) {
+  if (serverRooms.has(serverId)) {
+    for (const client of serverRooms.get(serverId)!) {
+      if (client !== exclude && client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    }
+  }
+}
+
 
 // GET method to handle WebSocket connection info request
 export function GET() {
   console.log('GET request received for WebSocket route');
-  return {
-    error: 'This is the WebSocket route. Connect using WebSockets',
-  
-  };
+  return new Response(
+    JSON.stringify({ error: 'This is the WebSocket route. Connect using WebSockets' }),
+    {
+      status: 426,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 }
