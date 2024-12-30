@@ -19,7 +19,7 @@ const formSchema = z.object({
 });
 
 export function ChatInput({ channelId, serverId }: ChatInputProps) {
-  const { socket, isConnected, sendMessage } = useWebSocket();
+  const { sendMessage } = useWebSocket();
   const [isSending, setIsSending] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
