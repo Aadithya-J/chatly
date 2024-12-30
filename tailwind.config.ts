@@ -8,18 +8,18 @@ export default {
   theme: {
     extend: {
       animation: {
-        spin: 'spin 1.5s linear infinite',
-        'fade-in': 'fade-in 1s ease-out',
-        dash: 'dash 1.5s ease-out infinite',
+        spin: "spin 1.5s linear infinite",
+        "fade-in": "fade-in 1s ease-out",
+        dash: "dash 1.5s ease-out infinite",
       },
       keyframes: {
-        'fade-in': {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
         },
         dash: {
-          '0%': { strokeDashoffset: '283' },
-          '100%': { strokeDashoffset: '0' },
+          "0%": { strokeDashoffset: "283" },
+          "100%": { strokeDashoffset: "0" },
         },
       },
       fontFamily: {
@@ -86,4 +86,3 @@ export default {
   },
   plugins: [tailwindAnimate],
 } satisfies Config;
-

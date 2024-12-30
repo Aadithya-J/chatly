@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
-import {    
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -72,7 +72,7 @@ export default function CreateServerDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-zinc-300 dark:bg-zinc-800">
+      <DialogContent className="bg-zinc-300 dark:bg-zinc-800 sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
             Customize your server

@@ -42,7 +42,9 @@ export default function CreateChannelDialog({
   type,
 }: CreateChannelDialogProps) {
   const params = useParams() ?? {};
-  const serverId = Array.isArray(params.serverId) ? params.serverId[0] ?? "" : params.serverId ?? "";
+  const serverId = Array.isArray(params.serverId)
+    ? (params.serverId[0] ?? "")
+    : (params.serverId ?? "");
 
   const utils = api.useUtils();
 
@@ -71,13 +73,14 @@ export default function CreateChannelDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-zinc-300 dark:bg-zinc-800">
+      <DialogContent className="bg-zinc-300 dark:bg-zinc-800 sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
             Create a {type === "text" ? "Text" : "Voice"} Channel
           </DialogTitle>
           <DialogDescription>
-            Enter the name for your {type === "text" ? "text" : "voice"} channel.
+            Enter the name for your {type === "text" ? "text" : "voice"}{" "}
+            channel.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

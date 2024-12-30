@@ -20,21 +20,21 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const session2 = await auth();
   const session1: unknown = session2;
-  const session = session1 as Session & User
+  const session = session1 as Session & User;
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body className="h-full">
         <TRPCReactProvider>
-         <ThemeProvider
+          <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
             <WebSocketProvider token={session?.sessionToken}>
-              <div className="flex p-0 min-h-screen">
+              <div className="flex min-h-screen p-0">
                 {session2?.user && <Navigation />}
-                <main className="flex-1 w-full border-zinc-400 dark:border-zinc-700 border-2">
+                <main className="w-full flex-1 border-2 border-zinc-400 dark:border-zinc-700">
                   {children}
                 </main>
               </div>

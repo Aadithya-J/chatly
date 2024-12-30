@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
-import {    
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -35,13 +35,13 @@ type ChannelFormData = z.infer<typeof channelSchema>;
 interface ManageServerDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  channelId: string
+  channelId: string;
 }
 
 export default function ManageServerDialog({
   isOpen,
   onClose,
-  channelId
+  channelId,
 }: ManageServerDialogProps) {
   const utils = api.useUtils();
 
@@ -71,18 +71,17 @@ export default function ManageServerDialog({
   const onRenameSubmit = async (data: ChannelFormData) => {
     renameChannel.mutate({
       name: data.name,
-      channelId
+      channelId,
     });
   };
 
   const onDeleteSubmit = async () => {
-    deleteChannel.mutate({ channelId
-    });
-  }
+    deleteChannel.mutate({ channelId });
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-zinc-300 dark:bg-zinc-800">
+      <DialogContent className="bg-zinc-300 dark:bg-zinc-800 sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
             Manage your channel
@@ -92,7 +91,10 @@ export default function ManageServerDialog({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onRenameSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(onRenameSubmit)}
+            className="space-y-6"
+          >
             <FormField
               control={form.control}
               name="name"
@@ -119,13 +121,15 @@ export default function ManageServerDialog({
           </form>
         </Form>
         <Button
-           type="button"
-           className="w-full bg-red-600 hover:bg-red-700"
-           onClick={onDeleteSubmit}
-           disabled={deleteChannel.status === "pending"}
-         >
-           {deleteChannel.status === "pending" ? "Deleting..." : "Delete Channel"}
-         </Button>
+          type="button"
+          className="w-full bg-red-600 hover:bg-red-700"
+          onClick={onDeleteSubmit}
+          disabled={deleteChannel.status === "pending"}
+        >
+          {deleteChannel.status === "pending"
+            ? "Deleting..."
+            : "Delete Channel"}
+        </Button>
       </DialogContent>
     </Dialog>
   );

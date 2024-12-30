@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ThemeProvider as NextThemesProvider } from "next-themes"
+import * as React from "react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import { LoadingScreen } from "./loading-screen";
 
@@ -16,7 +16,7 @@ export function ThemeProvider({
   }, []);
 
   if (!isMounted) {
-    return <LoadingScreen />
+    return <LoadingScreen />;
   }
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }

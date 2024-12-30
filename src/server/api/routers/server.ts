@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import type { Channel, PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import { auth } from "~/server/auth";
 import { ChannelType } from "@prisma/client";
 export const serverRouter = createTRPCRouter({
@@ -34,10 +34,10 @@ export const serverRouter = createTRPCRouter({
           name,
           image,
           inviteCode,
-          members:{
+          members: {
             connect: {
               id: profileId,
-            }
+            },
           },
           Channel: {
             create: [
@@ -56,45 +56,43 @@ export const serverRouter = createTRPCRouter({
       return server;
     }),
 
-    getServers: protectedProcedure
-    .query(async ({ ctx }) => {
-      const session = await auth();
-      if (!session?.user) {
-        throw new Error("Unauthorized");
-      }
-      const servers = await ctx.db.server.findMany({
-        where: {
-          members: {
-            some: {
-              id: session.user.id,
-            },
+  getServers: protectedProcedure.query(async ({ ctx }) => {
+    const session = await auth();
+    if (!session?.user) {
+      throw new Error("Unauthorized");
+    }
+    const servers = await ctx.db.server.findMany({
+      where: {
+        members: {
+          some: {
+            id: session.user.id,
           },
         },
-        include: {
-          Channel: {
-            where: {
-              type: ChannelType.TEXT,
-            },
-            take: 1,
-          }
+      },
+      include: {
+        Channel: {
+          where: {
+            type: ChannelType.TEXT,
+          },
+          take: 1,
         },
-      });
-      if (!servers) {
-        return null;
-      }
+      },
+    });
+    if (!servers) {
+      return null;
+    }
 
-      const processedServers = servers.map((server) => {
-        const channels = server.Channel ?? [];
-        const firstChannel = channels[0];
-        return {
-          ...server,
-          firstChannelId: firstChannel?.id ?? null,
-        };
-      });
-  
-      return processedServers;
-    }),
-    
+    const processedServers = servers.map((server) => {
+      const channels = server.Channel ?? [];
+      const firstChannel = channels[0];
+      return {
+        ...server,
+        firstChannelId: firstChannel?.id ?? null,
+      };
+    });
+
+    return processedServers;
+  }),
 
   getChannels: protectedProcedure
     .input(z.object({ serverId: z.string() }))
@@ -124,21 +122,21 @@ export const serverRouter = createTRPCRouter({
 
       return {
         text: serverData.Channel?.filter(
-          (channel) => channel.type === ChannelType.TEXT
+          (channel) => channel.type === ChannelType.TEXT,
         ),
         voice: serverData.Channel?.filter(
-          (channel) => channel.type === ChannelType.VOICE
+          (channel) => channel.type === ChannelType.VOICE,
         ),
       };
     }),
-    getFirstChannelId: protectedProcedure
+  getFirstChannelId: protectedProcedure
     .input(z.object({ serverId: z.string() }))
     .query(async ({ ctx, input }) => {
       const serverData = await ctx.db.server.findUnique({
         where: { id: input.serverId },
         include: {
           Channel: {
-            take: 1,  // Fetch only the first channel
+            take: 1, // Fetch only the first channel
             orderBy: {
               name: "asc",
             },
@@ -152,20 +150,20 @@ export const serverRouter = createTRPCRouter({
           },
         },
       });
-  
+
       if (!serverData) {
         console.log("server not found");
         return null;
       }
-  
+
       return serverData.Channel?.[0]?.id ?? null;
     }),
-    createNewChannel: protectedProcedure
+  createNewChannel: protectedProcedure
     .input(
       z.object({
         serverId: z.string(),
         name: z.string().min(1, "Name is required"),
-        type: z.enum(['TEXT', 'VOICE']),
+        type: z.enum(["TEXT", "VOICE"]),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -174,7 +172,7 @@ export const serverRouter = createTRPCRouter({
           name: input.name,
           serverId: input.serverId,
           profileId: ctx.session?.user?.id,
-          type: (input.type === 'TEXT' ? ChannelType.TEXT : ChannelType.VOICE),
+          type: input.type === "TEXT" ? ChannelType.TEXT : ChannelType.VOICE,
         },
       });
       return channel;

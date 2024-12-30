@@ -1,5 +1,12 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
 import { LoadingScreen } from "~/components/loading-screen";
 import { type MessageType, MessageTypes } from "~/types";
 
@@ -13,7 +20,9 @@ type WebSocketContextType = {
   sendMessage: (message: string) => void;
 };
 
-const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
+const WebSocketContext = createContext<WebSocketContextType | undefined>(
+  undefined,
+);
 
 export const useWebSocket = () => {
   const context = useContext(WebSocketContext);
@@ -30,7 +39,7 @@ type QueuedMessage = {
 
 export function WebSocketProvider({
   children,
-  token
+  token,
 }: {
   children: React.ReactNode;
   token: string;
@@ -51,23 +60,49 @@ export function WebSocketProvider({
     console.log("Log message received:", data);
   }, []);
 
-  const handleMessageSent = useCallback((data: string, channelId: string, serverId: string) => {
-    console.log("Message sent:", data, "in channel:", channelId, "on server:", serverId);
-  }, []);
+  const handleMessageSent = useCallback(
+    (data: string, channelId: string, serverId: string) => {
+      console.log(
+        "Message sent:",
+        data,
+        "in channel:",
+        channelId,
+        "on server:",
+        serverId,
+      );
+    },
+    [],
+  );
 
-  const handleNewText = useCallback((data: string, channelId: string, serverId: string) => {
-    console.log("New text received:", data, "in channel:", channelId, "on server:", serverId);
-  }, []);
-
+  const handleNewText = useCallback(
+    (data: string, channelId: string, serverId: string) => {
+      console.log(
+        "New text received:",
+        data,
+        "in channel:",
+        channelId,
+        "on server:",
+        serverId,
+      );
+    },
+    [],
+  );
 
   const processMessageQueue = useCallback(() => {
-    if (isProcessingQueue.current || messageQueue.current.length === 0 || !ws.current) {
+    if (
+      isProcessingQueue.current ||
+      messageQueue.current.length === 0 ||
+      !ws.current
+    ) {
       return;
     }
 
     isProcessingQueue.current = true;
 
-    while (messageQueue.current.length > 0 && ws.current?.readyState === WebSocket.OPEN) {
+    while (
+      messageQueue.current.length > 0 &&
+      ws.current?.readyState === WebSocket.OPEN
+    ) {
       const { message } = messageQueue.current[0]!;
       try {
         ws.current.send(message);
@@ -88,7 +123,7 @@ export function WebSocketProvider({
 
     try {
       ws.current = new WebSocket(`ws://localhost:3000/api/ws?token=${token}`);
-      
+
       ws.current.onopen = () => {
         console.log("WebSocket connected");
         setIsConnected(true);
@@ -102,7 +137,7 @@ export function WebSocketProvider({
         try {
           const message = JSON.parse(event.data as string) as MessageType;
           const { type, data, channelId, serverId } = message;
-          
+
           switch (type) {
             case MessageTypes.LOG:
               handleLogMessage(data);
@@ -127,27 +162,37 @@ export function WebSocketProvider({
         setSocket(null);
 
         if (!event.wasClean && reconnectAttempts.current < MAX_RETRIES) {
-          const delay = Math.min(currentRetryDelay.current * (1.5 ** reconnectAttempts.current), MAX_RETRY_DELAY);
+          const delay = Math.min(
+            currentRetryDelay.current * 1.5 ** reconnectAttempts.current,
+            MAX_RETRY_DELAY,
+          );
           console.log(`Attempting to reconnect in ${delay}ms...`);
-          
+
           reconnectTimeout.current = setTimeout(() => {
             reconnectAttempts.current += 1;
             currentRetryDelay.current = delay;
             connectWebSocket();
           }, delay);
         } else if (reconnectAttempts.current >= MAX_RETRIES) {
-          console.error("Max reconnection attempts reached. Please refresh the page.");
+          console.error(
+            "Max reconnection attempts reached. Please refresh the page.",
+          );
         }
       };
 
       ws.current.onerror = (error) => {
         console.error("WebSocket error:", error);
       };
-
     } catch (error) {
       console.error("Failed to create WebSocket connection:", error);
     }
-  }, [token, processMessageQueue, handleLogMessage, handleMessageSent, handleNewText]);
+  }, [
+    token,
+    processMessageQueue,
+    handleLogMessage,
+    handleMessageSent,
+    handleNewText,
+  ]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -178,13 +223,13 @@ export function WebSocketProvider({
         console.error("Failed to send message:", error);
         messageQueue.current.push({
           message,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
       }
     } else {
       messageQueue.current.push({
         message,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
       console.log("Message queued - WebSocket not ready");
     }

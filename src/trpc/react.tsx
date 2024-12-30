@@ -43,7 +43,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
     api.createClient({
       links: [
         loggerLink({
-          enabled: () => false
+          enabled: () => false,
         }),
         unstable_httpBatchStreamLink({
           transformer: SuperJSON,

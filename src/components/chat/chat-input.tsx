@@ -24,11 +24,10 @@ export function ChatInput({ channelId, serverId }: ChatInputProps) {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { data: "" }
+    defaultValues: { data: "" },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-
     setIsSending(true);
     const message = {
       data: values.data,
@@ -56,14 +55,14 @@ export function ChatInput({ channelId, serverId }: ChatInputProps) {
                   <button
                     type="button"
                     onClick={() => console.log("File Picker Here")}
-                    className="absolute top-7 left-8 h-[24px] w-[24px] bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full p-1 flex items-center justify-center"
+                    className="absolute left-8 top-7 flex h-[24px] w-[24px] items-center justify-center rounded-full bg-zinc-500 p-1 transition hover:bg-zinc-600 dark:bg-zinc-400 dark:hover:bg-zinc-300"
                   >
                     <Plus className="text-white dark:text-[#313338]" />
                   </button>
                   <Input
                     placeholder={`Message`}
                     disabled={isSending}
-                    className="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
+                    className="border-0 border-none bg-zinc-200/90 px-14 py-6 text-zinc-600 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-700/75 dark:text-zinc-200"
                     {...field}
                   />
                 </div>
