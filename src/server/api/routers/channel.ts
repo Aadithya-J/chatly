@@ -20,7 +20,11 @@ export const channelRouter = createTRPCRouter({
                 messages: {
                     orderBy: {
                         createdAt: 'asc'
+                    },
+                    include:{
+                        member: true
                     }
+                    
                 }
             }
         });
