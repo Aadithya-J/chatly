@@ -10,4 +10,5 @@ export type MessageType = {
   data: string;
   channelId: string;
   serverId: string;
+  userName: string;
 };
