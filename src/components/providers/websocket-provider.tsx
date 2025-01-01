@@ -18,6 +18,10 @@ type WebSocketContextType = {
   socket: WebSocket | null;
   isConnected: boolean;
   sendMessage: (message: string) => void;
+  receivedNewText: boolean;
+  channelOfNewText: string;
+  dataOfNewText: string;
+  userOfNewText: string;
 };
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(
@@ -48,6 +52,11 @@ export function WebSocketProvider({
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
+  const [receivedNewText, setReceivedNewText] = useState(false);
+  const [channelOfNewText, setChannelOfNewText] = useState("");
+  const [dataOfNewText, setDataOfNewText] = useState("");
+  const [userOfNewText, setUserOfNewText] = useState("");
+
   const reconnectAttempts = useRef(0);
   const reconnectTimeout = useRef<NodeJS.Timeout>();
   const currentRetryDelay = useRef(INITIAL_RETRY_DELAY);
@@ -75,7 +84,7 @@ export function WebSocketProvider({
   );
 
   const handleNewText = useCallback(
-    (data: string, channelId: string, serverId: string) => {
+    (data: string, channelId: string, serverId: string, userName: string) => {
       console.log(
         "New text received:",
         data,
@@ -83,7 +92,13 @@ export function WebSocketProvider({
         channelId,
         "on server:",
         serverId,
+        "from user:",
+        userName,
       );
+      setReceivedNewText(true);
+      setChannelOfNewText(channelId);
+      setDataOfNewText(data);
+      setUserOfNewText(userName);
     },
     [],
   );
@@ -136,7 +151,7 @@ export function WebSocketProvider({
       ws.current.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data as string) as MessageType;
-          const { type, data, channelId, serverId } = message;
+          const { type, data, channelId, serverId, userName } = message;
 
           switch (type) {
             case MessageTypes.LOG:
@@ -146,7 +161,7 @@ export function WebSocketProvider({
               handleMessageSent(data, channelId, serverId);
               break;
             case MessageTypes.NEW_TEXT:
-              handleNewText(data, channelId, serverId);
+              handleNewText(data, channelId, serverId, userName);
               break;
             default:
               console.warn("Invalid message type:", type);
@@ -246,7 +261,17 @@ export function WebSocketProvider({
   }
 
   return (
-    <WebSocketContext.Provider value={{ socket, isConnected, sendMessage }}>
+    <WebSocketContext.Provider
+      value={{
+        socket,
+        isConnected,
+        sendMessage,
+        receivedNewText,
+        channelOfNewText,
+        dataOfNewText,
+        userOfNewText,
+      }}
+    >
       {children}
     </WebSocketContext.Provider>
   );
