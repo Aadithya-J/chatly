@@ -178,16 +178,16 @@ export const serverRouter = createTRPCRouter({
       return channel;
     }),
   joinServer: protectedProcedure
-    .input(z.object({ inviteCode: z.string()}))
+    .input(z.object({ inviteCode: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const server = await ctx.db.server.update({
         where: { inviteCode: input.inviteCode },
         data: {
           members: {
-            connect: { id: ctx.session.user.id }
-          }
-        }
+            connect: { id: ctx.session.user.id },
+          },
+        },
       });
       return server;
-    })
+    }),
 });
