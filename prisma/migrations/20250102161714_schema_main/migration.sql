@@ -47,10 +47,10 @@ CREATE TABLE "Session" (
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "name" TEXT,
-    "email" TEXT,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
     "emailVerified" TIMESTAMP(3),
-    "image" TEXT,
+    "image" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -70,19 +70,8 @@ CREATE TABLE "Server" (
     "name" TEXT NOT NULL,
     "image" TEXT NOT NULL,
     "inviteCode" TEXT NOT NULL,
-    "profileId" TEXT NOT NULL,
 
     CONSTRAINT "Server_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Member" (
-    "id" TEXT NOT NULL,
-    "role" "MemberRole" NOT NULL DEFAULT 'MEMBER',
-    "profileId" TEXT NOT NULL,
-    "serverId" TEXT NOT NULL,
-
-    CONSTRAINT "Member_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -102,9 +91,20 @@ CREATE TABLE "Message" (
     "content" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "channelId" TEXT NOT NULL,
-    "profileId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Member" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "serverId" TEXT NOT NULL,
+    "role" "MemberRole" NOT NULL DEFAULT 'MEMBER',
+    "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Member_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -126,10 +126,7 @@ CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token"
 CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
 
 -- CreateIndex
-CREATE INDEX "Server_profileId_idx" ON "Server"("profileId");
-
--- CreateIndex
-CREATE INDEX "Member_profileId_idx" ON "Member"("profileId");
+CREATE UNIQUE INDEX "Server_inviteCode_key" ON "Server"("inviteCode");
 
 -- CreateIndex
 CREATE INDEX "Channel_profileId_idx" ON "Channel"("profileId");
@@ -141,7 +138,13 @@ CREATE INDEX "Channel_serverId_idx" ON "Channel"("serverId");
 CREATE INDEX "Message_channelId_idx" ON "Message"("channelId");
 
 -- CreateIndex
-CREATE INDEX "Message_profileId_idx" ON "Message"("profileId");
+CREATE INDEX "Message_userId_idx" ON "Message"("userId");
+
+-- CreateIndex
+CREATE INDEX "Member_serverId_idx" ON "Member"("serverId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Member_userId_serverId_key" ON "Member"("userId", "serverId");
 
 -- AddForeignKey
 ALTER TABLE "Post" ADD CONSTRAINT "Post_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -153,15 +156,6 @@ ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Server" ADD CONSTRAINT "Server_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Member" ADD CONSTRAINT "Member_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Member" ADD CONSTRAINT "Member_serverId_fkey" FOREIGN KEY ("serverId") REFERENCES "Server"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Channel" ADD CONSTRAINT "Channel_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -171,4 +165,10 @@ ALTER TABLE "Channel" ADD CONSTRAINT "Channel_serverId_fkey" FOREIGN KEY ("serve
 ALTER TABLE "Message" ADD CONSTRAINT "Message_channelId_fkey" FOREIGN KEY ("channelId") REFERENCES "Channel"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Message" ADD CONSTRAINT "Message_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Message" ADD CONSTRAINT "Message_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Member" ADD CONSTRAINT "Member_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Member" ADD CONSTRAINT "Member_serverId_fkey" FOREIGN KEY ("serverId") REFERENCES "Server"("id") ON DELETE CASCADE ON UPDATE CASCADE;

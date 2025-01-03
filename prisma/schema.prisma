@@ -48,18 +48,17 @@ model Session {
 model User {
   id            String    @id @default(cuid())
   name          String    
-  email         String   @unique
+  email         String    @unique
   emailVerified DateTime?
   image         String
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
-  Channel       Channel[]
+  channels      Channel[]
   posts         Post[]
-  Server        Server[]
+  servers       Member[]
   sessions      Session[]
-
-  Message Message[]
+  messages      Message[]
 }
 
 model VerificationToken {
@@ -75,8 +74,8 @@ model Server {
   name       String
   image      String
   inviteCode String    @unique
-  Channel    Channel[]
-  members    User[]
+  channels   Channel[]
+  members    Member[]
 }
 
 model Channel {
@@ -113,4 +112,17 @@ enum MemberRole {
 enum ChannelType {
   TEXT
   VOICE
+}
+
+model Member {
+  id        String     @id @default(cuid())
+  userId    String
+  serverId  String
+  role      MemberRole @default(MEMBER)
+  joinedAt  DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  server    Server     @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, serverId])
+  @@index([serverId])
 }
