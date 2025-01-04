@@ -15,7 +15,7 @@ export const useServers = (): {
     serversData:
       servers?.map((server) => ({
         server,
-        firstTextChannelId: server.Channel?.[0]?.id ?? "",
+        firstTextChannelId: server.channels?.[0]?.id ?? "",
       })) ?? [],
     isLoading,
   };

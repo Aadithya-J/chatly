@@ -76,7 +76,7 @@ async function validateServerAccess(
         id: serverId,
         members: {
           some: {
-            id: userId,
+            userId: userId,
           },
         },
       },

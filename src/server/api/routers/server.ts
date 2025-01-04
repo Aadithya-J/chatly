@@ -35,11 +35,11 @@ export const serverRouter = createTRPCRouter({
           image,
           inviteCode,
           members: {
-            connect: {
-              id: profileId,
+            create: {
+              userId: profileId,
             },
           },
-          Channel: {
+          channels: {
             create: [
               {
                 name: "general",
@@ -49,7 +49,7 @@ export const serverRouter = createTRPCRouter({
           },
         },
         include: {
-          Channel: true,
+          channels: true,
         },
       });
 
@@ -65,12 +65,12 @@ export const serverRouter = createTRPCRouter({
       where: {
         members: {
           some: {
-            id: session.user.id,
+            userId: session.user.id,
           },
         },
       },
       include: {
-        Channel: {
+        channels: {
           where: {
             type: ChannelType.TEXT,
           },
@@ -83,7 +83,7 @@ export const serverRouter = createTRPCRouter({
     }
 
     const processedServers = servers.map((server) => {
-      const channels = server.Channel ?? [];
+      const channels = server.channels ?? [];
       const firstChannel = channels[0];
       return {
         ...server,
@@ -100,7 +100,7 @@ export const serverRouter = createTRPCRouter({
       const serverData = await ctx.db.server.findUnique({
         where: { id: input.serverId },
         include: {
-          Channel: {
+          channels: {
             orderBy: {
               name: "asc",
             },
@@ -121,10 +121,10 @@ export const serverRouter = createTRPCRouter({
       }
 
       return {
-        text: serverData.Channel?.filter(
+        text: serverData.channels?.filter(
           (channel) => channel.type === ChannelType.TEXT,
         ),
-        voice: serverData.Channel?.filter(
+        voice: serverData.channels?.filter(
           (channel) => channel.type === ChannelType.VOICE,
         ),
       };
@@ -135,7 +135,7 @@ export const serverRouter = createTRPCRouter({
       const serverData = await ctx.db.server.findUnique({
         where: { id: input.serverId },
         include: {
-          Channel: {
+          channels: {
             take: 1, // Fetch only the first channel
             orderBy: {
               name: "asc",
@@ -156,7 +156,7 @@ export const serverRouter = createTRPCRouter({
         return null;
       }
 
-      return serverData.Channel?.[0]?.id ?? null;
+      return serverData.channels?.[0]?.id ?? null;
     }),
   createNewChannel: protectedProcedure
     .input(
