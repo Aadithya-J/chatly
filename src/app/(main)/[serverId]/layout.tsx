@@ -21,7 +21,7 @@ export default async function authRedirectLayout({
     include: {
       members: {
         where: {
-          id: session.user.id,
+          userId: session.user.id,
         },
       },
     },

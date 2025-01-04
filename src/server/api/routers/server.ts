@@ -184,7 +184,7 @@ export const serverRouter = createTRPCRouter({
         where: { inviteCode: input.inviteCode },
         data: {
           members: {
-            connect: { id: ctx.session.user.id },
+            create: { userId: ctx.session.user.id },
           },
         },
       });
