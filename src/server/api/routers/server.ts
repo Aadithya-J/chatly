@@ -190,4 +190,12 @@ export const serverRouter = createTRPCRouter({
       });
       return server;
     }),
+  getInviteCode: protectedProcedure
+    .input(z.object({ serverId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const server = await ctx.db.server.findUnique({
+        where: { id: input.serverId },
+      });
+      return server?.inviteCode ?? null;
+    }),
 });
