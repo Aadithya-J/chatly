@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import { SwitchServerLayout } from "~/components/switch-server-layout";
+import { Toaster } from "~/components/ui/toaster";
 export default async function authRedirectLayout({
   children,
   params,
@@ -32,6 +33,7 @@ export default async function authRedirectLayout({
   return (
     <div className="h-full bg-zinc-400 dark:bg-zinc-900">
       <SwitchServerLayout>{children}</SwitchServerLayout>
+      <Toaster />
     </div>
   );
 }
