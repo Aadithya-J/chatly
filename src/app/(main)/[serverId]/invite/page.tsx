@@ -17,7 +17,7 @@ export default function InvitePage() {
   const { toast } = useToast();
   const copyInviteCode = () => {
     if (inviteCode) {
-      void navigator.clipboard.writeText(inviteCode);
+      void navigator.clipboard.writeText("localhost:3000/join/" + inviteCode);
       toast({ title: "Copied invite code to clipboard" });
     }
   };
