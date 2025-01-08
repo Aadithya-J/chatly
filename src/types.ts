@@ -3,6 +3,7 @@ export enum MessageTypes {
   MESSAGE_SENT = "message-sent",
   SWITCH_SERVER = "switch-server",
   NEW_TEXT = "new-text",
+  SERVER_MISMATCH = "server-mismatch",
 }
 
 export type MessageType = {
