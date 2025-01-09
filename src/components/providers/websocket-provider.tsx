@@ -64,7 +64,6 @@ export function WebSocketProvider({
   const messageQueue = useRef<QueuedMessage[]>([]);
   const isProcessingQueue = useRef(false);
 
-
   const handleLogMessage = useCallback((data: string) => {
     console.log("Log message received:", data);
   }, []);
