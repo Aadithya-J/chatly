@@ -9,7 +9,6 @@ import React, {
 } from "react";
 import { LoadingScreen } from "~/components/loading-screen";
 import { type MessageType, MessageTypes } from "~/types";
-import { useRouter } from "next/router";
 const INITIAL_RETRY_DELAY = 1000;
 const MAX_RETRY_DELAY = 30000;
 const MAX_RETRIES = 5;
@@ -65,7 +64,6 @@ export function WebSocketProvider({
   const messageQueue = useRef<QueuedMessage[]>([]);
   const isProcessingQueue = useRef(false);
 
-  const router = useRouter();
 
   const handleLogMessage = useCallback((data: string) => {
     console.log("Log message received:", data);
@@ -106,8 +104,8 @@ export function WebSocketProvider({
   );
 
   const handleServerMismatch = useCallback(() => {
-    router.reload();
-  }, [router]);
+    window.location.reload();
+  }, []);
 
   const processMessageQueue = useCallback(() => {
     if (
