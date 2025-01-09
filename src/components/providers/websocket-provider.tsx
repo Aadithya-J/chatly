@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { LoadingScreen } from "~/components/loading-screen";
 import { type MessageType, MessageTypes } from "~/types";
-
+import { useRouter } from "next/router";
 const INITIAL_RETRY_DELAY = 1000;
 const MAX_RETRY_DELAY = 30000;
 const MAX_RETRIES = 5;
@@ -65,6 +65,8 @@ export function WebSocketProvider({
   const messageQueue = useRef<QueuedMessage[]>([]);
   const isProcessingQueue = useRef(false);
 
+  const router = useRouter();
+
   const handleLogMessage = useCallback((data: string) => {
     console.log("Log message received:", data);
   }, []);
@@ -102,6 +104,10 @@ export function WebSocketProvider({
     },
     [],
   );
+
+  const handleServerMismatch = useCallback(() => {
+    router.reload();
+  }, [router]);
 
   const processMessageQueue = useCallback(() => {
     if (
@@ -163,6 +169,9 @@ export function WebSocketProvider({
             case MessageTypes.NEW_TEXT:
               handleNewText(data, channelId, serverId, userName);
               break;
+            case MessageTypes.SERVER_MISMATCH:
+              handleServerMismatch();
+              break;
             default:
               console.warn("Invalid message type:", type);
           }
@@ -207,6 +216,7 @@ export function WebSocketProvider({
     handleLogMessage,
     handleMessageSent,
     handleNewText,
+    handleServerMismatch,
   ]);
 
   useEffect(() => {
