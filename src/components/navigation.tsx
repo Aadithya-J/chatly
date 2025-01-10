@@ -1,10 +1,11 @@
 "use client";
-
 import { ServerSidebar } from "~/components/navigation/server-sidebar";
 import { ChannelSidebar } from "~/components/navigation/channel-sidebar";
 import type { Channel } from "@prisma/client";
 import { useServers, useChannels } from "~/hooks/api-utils";
 import { useParams } from "next/navigation";
+import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet";
+import { Menu } from "lucide-react";
 
 export function Navigation() {
   const params = useParams();
@@ -24,12 +25,12 @@ export function Navigation() {
     channelData ?? { text: [], voice: [] };
   const selectedServer = servers.find((s) => s.id === selectedServerId);
 
-  return (
-    <div className="h-128 flex">
+  const NavigationContent = () => (
+    <div className="flex h-full">
       <ServerSidebar
         servers={serversData}
         selectedServerId={selectedServerId}
-        isLoading={isLoadingServers} // Passing the loading state to ServerSidebar
+        isLoading={isLoadingServers}
       />
       {selectedServerId !== "" && (
         <ChannelSidebar
@@ -37,9 +38,30 @@ export function Navigation() {
           selectedChannelId={selectedChannelId}
           serverId={selectedServerId}
           serverName={selectedServer?.name ?? ""}
-          isLoading={isLoadingChannels} // Passing the loading state to ChannelSidebar
+          isLoading={isLoadingChannels}
         />
       )}
     </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Navigation */}
+      <div className="hidden md:block">
+        <NavigationContent />
+      </div>
+
+      {/* Mobile Navigation with Sheet */}
+      <div className="md:hidden">
+        <Sheet>
+          <SheetTrigger className="fixed left-4 top-4 z-50 rounded-md border bg-background p-2">
+            <Menu className="h-6 w-6" />
+          </SheetTrigger>
+          <SheetContent side="left" className="w-80 p-0">
+            <NavigationContent />
+          </SheetContent>
+        </Sheet>
+      </div>
+    </>
   );
 }
