@@ -71,8 +71,8 @@ export default function ChannelPage() {
 
   return (
     <Card className="flex h-screen flex-col bg-zinc-400 dark:bg-zinc-900">
-      <CardHeader className="border-b p-4">
-        <CardTitle>Group Chat</CardTitle>
+      <CardHeader className="border-b p-4 text-2xl">
+        <CardTitle>#{channel.name}</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 overflow-hidden">
         <MessageList messages={messages} />
