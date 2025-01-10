@@ -1,5 +1,4 @@
 "use client";
-
 import { type Server } from "@prisma/client";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
@@ -34,24 +33,32 @@ export function ServerSidebar({
   const handleDialogOpen = () => {
     setIsDialogOpen(true);
   };
+
   if (isLoading) {
     return <LoadingScreen />;
   }
+
   return (
-    <div className="flex h-full w-[72px] flex-col items-center bg-zinc-400 py-3 dark:bg-zinc-900">
-      <div className="group">
-        <Button
-          onClick={handleDialogOpen}
-          size={"icon"}
-          className="group relative h-12 w-12 rounded-[24px] bg-neutral-700 p-0 text-emerald-300 transition-all duration-200 hover:rounded-[16px] hover:bg-emerald-500 hover:text-slate-800"
-        >
-          <Plus strokeWidth={2.2} className="h-full w-full" />
-        </Button>
-        <CreateServerDialog isOpen={isDialogOpen} onClose={handleDialogClose} />
+    <div className="flex h-full w-[72px] flex-col bg-zinc-400 dark:bg-zinc-900">
+      <div className="flex flex-col items-center space-y-2 p-3">
+        <div className="group">
+          <Button
+            onClick={handleDialogOpen}
+            size={"icon"}
+            className="group relative h-12 w-12 rounded-[24px] bg-neutral-700 p-0 text-emerald-300 transition-all duration-200 hover:rounded-[16px] hover:bg-emerald-500 hover:text-slate-800"
+          >
+            <Plus strokeWidth={2.2} className="h-full w-full" />
+          </Button>
+          <CreateServerDialog
+            isOpen={isDialogOpen}
+            onClose={handleDialogClose}
+          />
+        </div>
+        <Separator className="h-[2px] w-12 rounded-lg bg-[#313338]" />
       </div>
-      <Separator className="my-2 h-[2px] w-12 rounded-lg bg-[#313338]" />
-      <ScrollArea className="w-full flex-1">
-        <div className="flex flex-col items-center space-y-2">
+
+      <ScrollArea className="mb-auto flex-1">
+        <div className="flex flex-col items-center space-y-2 px-3">
           {servers.map(
             (serverData: { server: Server; firstTextChannelId: string }) => (
               <ServerButton
@@ -64,7 +71,10 @@ export function ServerSidebar({
           )}
         </div>
       </ScrollArea>
-      <ModeToggle />
+
+      <div className="mt-auto flex items-center justify-center p-3">
+        <ModeToggle />
+      </div>
     </div>
   );
 }
