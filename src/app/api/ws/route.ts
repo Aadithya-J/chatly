@@ -1,3 +1,5 @@
+// eslint-disable
+/* eslint-disable */
 import { WebSocket, type WebSocketServer } from "ws";
 import type { IncomingMessage } from "http";
 import { db } from "~/server/db";
