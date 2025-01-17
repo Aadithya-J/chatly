@@ -212,12 +212,19 @@ export const serverRouter = createTRPCRouter({
       return true;
     }),
   getServerByInviteCode: protectedProcedure
-    .input(z.object({ inviteCode : z.string() }))
+    .input(z.object({ inviteCode: z.string() }))
     .query(async ({ ctx, input }) => {
       const server = await ctx.db.server.findUnique({
         where: { inviteCode: input.inviteCode },
       });
       return server;
     }),
-    
+  getServerById: protectedProcedure
+    .input(z.object({ serverId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const server = await ctx.db.server.findUnique({
+        where: { id: input.serverId },
+      });
+      return server;
+    }),
 });
