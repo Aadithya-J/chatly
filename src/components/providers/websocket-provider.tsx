@@ -140,8 +140,10 @@ export function WebSocketProvider({
     }
 
     try {
-      ws.current = new WebSocket(`ws://localhost:3000/api/ws?token=${token}`);
-
+      const wsUrl = process.env.RAILWAY_PUBLIC_DOMAIN 
+        ? `${process.env.RAILWAY_PUBLIC_DOMAIN}/api/ws?token=${token}`
+        : `ws://localhost:3000/api/ws?token=${token}`;
+      ws.current = new WebSocket(wsUrl);
       ws.current.onopen = () => {
         console.log("WebSocket connected");
         setIsConnected(true);
