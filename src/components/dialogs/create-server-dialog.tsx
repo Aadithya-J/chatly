@@ -27,7 +27,10 @@ import { api } from "~/trpc/react";
 import { useUploadThing } from "~/lib/uploadthing";
 
 const serverSchema = z.object({
-  name: z.string().min(1, "Server name is required").max(50, "Server name is too long"),
+  name: z
+    .string()
+    .min(1, "Server name is required")
+    .max(50, "Server name is too long"),
   description: z.string().max(200, "Description is too long").optional(),
 });
 
@@ -45,7 +48,7 @@ export default function CreateServerDialog({
   const utils = api.useUtils();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  
+
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: () => {
       // Clear file selection after successful upload
@@ -93,7 +96,7 @@ export default function CreateServerDialog({
 
       if (selectedFile) {
         const uploadResponse = await startUpload([selectedFile]);
-        if(!uploadResponse){
+        if (!uploadResponse) {
           throw new Error("Upload failed");
         }
         if (uploadResponse?.[0]) {
@@ -131,7 +134,8 @@ export default function CreateServerDialog({
             Customize your server
           </DialogTitle>
           <DialogDescription>
-            Give your server a name, description, and image. You can always change these later.
+            Give your server a name, description, and image. You can always
+            change these later.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -169,13 +173,13 @@ export default function CreateServerDialog({
 
             <div className="space-y-4">
               {previewUrl && (
-                  <Image
-                    src={previewUrl}
-                    alt="Preview"
-                    className="object-cover"
-                    fill
-                    sizes="160px"
-                  />
+                <Image
+                  src={previewUrl}
+                  alt="Preview"
+                  className="object-cover"
+                  fill
+                  sizes="160px"
+                />
               )}
               <Input
                 type="file"
@@ -190,7 +194,9 @@ export default function CreateServerDialog({
               className="w-full"
               disabled={createServer.isPending || isUploading}
             >
-              {createServer.isPending || isUploading ? "Creating..." : "Create Server"}
+              {createServer.isPending || isUploading
+                ? "Creating..."
+                : "Create Server"}
             </Button>
           </form>
         </Form>
