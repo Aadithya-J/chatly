@@ -21,8 +21,8 @@ export const ourFileRouter = {
       const session = await auth();
 
       // If you throw, the user will not be able to upload
-      if (!session){
-        throw new Error("unauthorized")
+      if (!session) {
+        throw new Error("unauthorized");
       }
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
@@ -35,7 +35,7 @@ export const ourFileRouter = {
       console.log("file url", file.url);
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { uploadedBy: metadata.userId };
+      return { uploadedBy: metadata.userId, fileUrl: file.url };
     }),
 } satisfies FileRouter;
 
