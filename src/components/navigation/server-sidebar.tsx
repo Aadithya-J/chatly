@@ -45,7 +45,7 @@ export function ServerSidebar({
           <Button
             onClick={handleDialogOpen}
             size={"icon"}
-            className="group relative h-12 w-12 rounded-[24px] bg-neutral-700 p-0 text-emerald-300 transition-all duration-200 hover:rounded-[16px] hover:bg-emerald-500 hover:text-slate-800"
+            className="group relative h-12 w-12 rounded-[24px] bg-zinc-500 p-0 text-emerald-400 transition-all duration-200 hover:rounded-[16px] hover:bg-emerald-400 hover:text-slate-800 dark:bg-neutral-700 dark:text-emerald-300 dark:hover:bg-emerald-500"
           >
             <Plus strokeWidth={2.2} className="h-full w-full" />
           </Button>

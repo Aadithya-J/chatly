@@ -34,7 +34,8 @@ export function ServerButton({
             <button
               className={cn(
                 "group relative flex h-12 w-12 items-center justify-center rounded-[24px] bg-[#313338] transition-all duration-200 hover:rounded-[16px]",
-                isSelected && "rounded-[16px] bg-slate-400 dark:bg-slate-600",
+                isSelected &&
+                  "rounded-[16px] bg-slate-400 text-black dark:bg-slate-600",
               )}
             >
               {imageUrl ? (
@@ -46,7 +47,7 @@ export function ServerButton({
                   className="h-full w-full rounded-[inherit] object-cover"
                 />
               ) : (
-                <Hash className="h-5 w-5 text-zinc-400 group-hover:text-zinc-300" />
+                <Hash className="h-5 w-5 text-slate-700 group-hover:text-slate-600 dark:text-zinc-400 dark:group-hover:text-zinc-300" />
               )}
               <div className="absolute left-0 h-0 w-1 rounded-r-full bg-white opacity-0 transition-all duration-200 group-hover:h-5 group-hover:opacity-100" />
             </button>
