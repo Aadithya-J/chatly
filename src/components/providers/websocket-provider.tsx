@@ -140,7 +140,7 @@ export function WebSocketProvider({
     }
 
     try {
-      const wsUrl = process.env.RAILWAY_PUBLIC_DOMAIN 
+      const wsUrl = process.env.RAILWAY_PUBLIC_DOMAIN
         ? `${process.env.RAILWAY_PUBLIC_DOMAIN}/api/ws?token=${token}`
         : `ws://localhost:3000/api/ws?token=${token}`;
       ws.current = new WebSocket(wsUrl);
