@@ -140,8 +140,8 @@ export function WebSocketProvider({
     }
 
     try {
-      const wsUrl = process.env.RAILWAY_PUBLIC_DOMAIN
-        ? `${process.env.RAILWAY_PUBLIC_DOMAIN}/api/ws?token=${token}`
+      const wsUrl = process.env.NEXT_PUBLIC_PRODUCTION_URL
+        ? `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/api/ws?token=${token}`
         : `ws://localhost:3000/api/ws?token=${token}`;
       ws.current = new WebSocket(wsUrl);
       ws.current.onopen = () => {
