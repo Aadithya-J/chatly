@@ -1,10 +1,10 @@
 "use client";
-
-import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
+import Image from "next/image";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -24,12 +24,10 @@ import {
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/trpc/react";
+import { useUploadThing } from "~/lib/uploadthing";
 
 const serverSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Server name is required")
-    .max(50, "Server name is too long"),
+  name: z.string().min(1, "Server name is required").max(50, "Server name is too long"),
   description: z.string().max(200, "Description is too long").optional(),
 });
 
@@ -45,6 +43,20 @@ export default function CreateServerDialog({
   onClose,
 }: CreateServerDialogProps) {
   const utils = api.useUtils();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  
+  const { startUpload, isUploading } = useUploadThing("imageUploader", {
+    onClientUploadComplete: () => {
+      // Clear file selection after successful upload
+      setSelectedFile(null);
+      setPreviewUrl(null);
+    },
+    onUploadError: (error: Error) => {
+      console.error("Upload failed:", error.message);
+      alert("Failed to upload image");
+    },
+  });
 
   const form = useForm<ServerFormData>({
     resolver: zodResolver(serverSchema),
@@ -58,28 +70,68 @@ export default function CreateServerDialog({
     onSuccess: async () => {
       await utils.server.getServers.invalidate();
       form.reset();
-      onClose(); // Close the dialog after success
+      onClose();
     },
   });
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      // Create local preview
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return objectUrl;
+      });
+    }
+  };
+
   const onSubmit = async (data: ServerFormData) => {
-    createServer.mutate({
-      name: data.name,
-      description: data.description ?? "",
-      inviteCode: uuid(),
-      image: "https://picsum.photos/200/300",
-    });
+    try {
+      let imageUrl = "https://picsum.photos/200/300";
+
+      if (selectedFile) {
+        const uploadResponse = await startUpload([selectedFile]);
+        if(!uploadResponse){
+          throw new Error("Upload failed");
+        }
+        if (uploadResponse?.[0]) {
+          imageUrl = uploadResponse[0].url;
+        }
+      }
+
+      await createServer.mutateAsync({
+        name: data.name,
+        description: data.description ?? "",
+        inviteCode: uuid(),
+        image: imageUrl,
+      });
+    } catch (error) {
+      console.error("Error creating server:", error);
+      alert("Failed to create server");
+    }
+  };
+
+  const handleClose = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    form.reset();
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    onClose();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-zinc-300 dark:bg-zinc-800 sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
             Customize your server
           </DialogTitle>
           <DialogDescription>
-            Give your server a name and description. You can always change these
-            later.
+            Give your server a name, description, and image. You can always change these later.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -97,7 +149,6 @@ export default function CreateServerDialog({
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="description"
@@ -116,14 +167,30 @@ export default function CreateServerDialog({
               )}
             />
 
+            <div className="space-y-4">
+              {previewUrl && (
+                  <Image
+                    src={previewUrl}
+                    alt="Preview"
+                    className="object-cover"
+                    fill
+                    sizes="160px"
+                  />
+              )}
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="cursor-pointer"
+              />
+            </div>
+
             <Button
               type="submit"
               className="w-full"
-              disabled={createServer.status === "pending"}
+              disabled={createServer.isPending || isUploading}
             >
-              {createServer.status === "pending"
-                ? "Creating..."
-                : "Create Server"}
+              {createServer.isPending || isUploading ? "Creating..." : "Create Server"}
             </Button>
           </form>
         </Form>
