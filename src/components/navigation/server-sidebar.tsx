@@ -64,6 +64,7 @@ export function ServerSidebar({
               <ServerButton
                 key={serverData.server.id}
                 {...serverData.server}
+                imageUrl={serverData.server.image}
                 firstTextChannelId={serverData.firstTextChannelId}
                 isSelected={selectedServerId === serverData.server.id}
               />

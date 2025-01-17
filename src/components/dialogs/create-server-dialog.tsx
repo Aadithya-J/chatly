@@ -92,7 +92,7 @@ export default function CreateServerDialog({
 
   const onSubmit = async (data: ServerFormData) => {
     try {
-      let imageUrl = "https://picsum.photos/200/300";
+      let imageUrl = "";
 
       if (selectedFile) {
         const uploadResponse = await startUpload([selectedFile]);

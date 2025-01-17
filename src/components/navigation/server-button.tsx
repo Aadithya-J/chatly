@@ -38,7 +38,7 @@ export function ServerButton({
                   "rounded-[16px] bg-slate-400 text-black dark:bg-slate-600",
               )}
             >
-              {imageUrl ? (
+              {imageUrl && imageUrl.length > 0 ? (
                 <Image
                   src={imageUrl}
                   alt={name}
