@@ -198,4 +198,26 @@ export const serverRouter = createTRPCRouter({
       });
       return server?.inviteCode ?? null;
     }),
+  leaveServer: protectedProcedure
+    .input(z.object({ serverId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.member.delete({
+        where: {
+          userId_serverId: {
+            userId: ctx.session.user.id,
+            serverId: input.serverId,
+          },
+        },
+      });
+      return true;
+    }),
+  getServerByInviteCode: protectedProcedure
+    .input(z.object({ inviteCode : z.string() }))
+    .query(async ({ ctx, input }) => {
+      const server = await ctx.db.server.findUnique({
+        where: { inviteCode: input.inviteCode },
+      });
+      return server;
+    }),
+    
 });
