@@ -141,7 +141,7 @@ export function WebSocketProvider({
 
     try {
       const wsUrl = process.env.NEXT_PUBLIC_PRODUCTION_URL
-        ? `ws://${process.env.NEXT_PUBLIC_PRODUCTION_URL}/api/ws?token=${token}`
+        ? `wss://${process.env.NEXT_PUBLIC_PRODUCTION_URL}/api/ws?token=${token}`
         : `ws://localhost:3000/api/ws?token=${token}`;
       console.log(wsUrl);
       ws.current = new WebSocket(wsUrl);
