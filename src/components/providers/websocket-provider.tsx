@@ -143,6 +143,7 @@ export function WebSocketProvider({
       const wsUrl = process.env.NEXT_PUBLIC_PRODUCTION_URL
         ? `ws://${process.env.NEXT_PUBLIC_PRODUCTION_URL}:${process.env.PORT}/api/ws?token=${token}`
         : `ws://localhost:3000/api/ws?token=${token}`;
+      console.log(wsUrl);
       ws.current = new WebSocket(wsUrl);
       ws.current.onopen = () => {
         console.log("WebSocket connected");
