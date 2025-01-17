@@ -9,7 +9,7 @@ export const serverRouter = createTRPCRouter({
       z.object({
         name: z.string().min(1, "Name is required"),
         description: z.string().max(200, "Description is too long").optional(),
-        image: z.string().url("Invalid image URL"),
+        image: z.string(),
         inviteCode: z
           .string()
           .min(6, "Invite code must be at least 6 characters long"),
